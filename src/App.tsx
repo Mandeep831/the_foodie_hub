@@ -1,6 +1,6 @@
+import "./App.css";
 import RecipeList from "./components/recipeList/RecipeList";
-import IngredientsList from "./components/ingredients/IngredientsList";
-import Reviews from "./components/Reviews/review";
+
 
 function App() {
   return (
@@ -11,8 +11,6 @@ function App() {
 
       <main>
         <RecipeList />
-        <IngredientsList />
-        <Reviews />
       </main>
 
       <footer>
