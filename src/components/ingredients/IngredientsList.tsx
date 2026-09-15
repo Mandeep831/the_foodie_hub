@@ -1,10 +1,29 @@
-function IngredientsList() {
-  const ingredients = [
-    {
-      id: 1,
-      name: "Paneer",
-      description: "Indian cottage cheese used in many vegetarian dishes.",
-    },
+export const recipeIngredients = [
+  {
+    recipeName: "Paneer Tikka",
+    ingredients: [
+      {
+        name: "Paneer",
+        description:
+          "Indian cottage cheese used as the main ingredient.",
+      },
+      {
+        name: "Yogurt",
+        description:
+          "Used to marinate the paneer and make it soft and flavourful.",
+      },
+      {
+        name: "Bell Peppers",
+        description:
+          "Add colour, flavour, and crunch to the dish.",
+      },
+      {
+        name: "Spices",
+        description:
+          "Add flavour, aroma, and seasoning.",
+      },
+    ],
+  },
     {
       id: 2,
       name: "Chickpeas",
@@ -25,7 +44,7 @@ function IngredientsList() {
         {ingredients.map((ingredient) => (
           <article className="ingredient-card" key={ingredient.id}>
             <div className="ingredient-image">
-              <span>🥗</span>
+              <span></span>
             </div>
 
             <div className="ingredient-content">
