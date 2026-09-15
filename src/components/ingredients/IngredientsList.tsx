@@ -24,17 +24,61 @@ export const recipeIngredients = [
       },
     ],
   },
-    {
-      id: 2,
-      name: "Chickpeas",
-      description: "Protein-rich legumes commonly used in curries and salads.",
-    },
-    {
-      id: 3,
-      name: "Mozzarella Cheese",
-      description: "A soft cheese commonly used as a pizza topping.",
-    },
-  ];
+  {
+    recipeName: "Chole Bhature",
+    ingredients: [
+      {
+        name: "Chickpeas",
+        description:
+          "The main ingredient used to prepare the spicy curry.",
+      },
+      {
+        name: "Flour",
+        description:
+          "Used to prepare the dough for the bhature.",
+      },
+      {
+        name: "Onion",
+        description:
+          "Adds flavour and helps create the curry base.",
+      },
+      {
+        name: "Tomato",
+        description:
+          "Helps create the curry sauce and adds a slightly tangy flavour.",
+      },
+      {
+        name: "Spices",
+        description:
+          "Give the chickpea curry its traditional flavour.",
+      },
+    ],
+  },
+  {
+    recipeName: "Margherita Pizza",
+    ingredients: [
+      {
+        name: "Pizza Dough",
+        description:
+          "Forms the base of the pizza.",
+      },
+      {
+        name: "Tomato Sauce",
+        description:
+          "Adds flavour and moisture to the pizza.",
+      },
+      {
+        name: "Mozzarella Cheese",
+        description:
+          "Melts over the pizza and gives it a creamy texture.",
+      },
+      {
+        name: "Basil",
+        description:
+          "Adds a fresh flavour and pleasant aroma.",
+      },
+    ],
+  },
 
   return (
     <section className="ingredientsList">
