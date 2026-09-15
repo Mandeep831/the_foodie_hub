@@ -255,3 +255,30 @@ export const recipeIngredients = [
     ],
   },
 ];
+
+function IngredientsList() {
+  return (
+    <section className="ingredients-list">
+      <h2>Recipe Ingredients</h2>
+
+      <div className="ingredient-cards">
+        {recipeIngredients.map((recipe) => (
+          <article className="ingredient-card" key={recipe.recipeName}>
+            <h3>{recipe.recipeName}</h3>
+
+            <ul>
+              {recipe.ingredients.map((ingredient) => (
+                <li key={ingredient.name}>
+                  <strong>{ingredient.name}</strong>
+                  <p>{ingredient.description}</p>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default IngredientsList;
