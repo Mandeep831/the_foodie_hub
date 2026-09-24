@@ -106,6 +106,15 @@ function RecipeList() {
                     : "View Ingredients"}
                 </button>
 
+                <button
+                  type="button"
+                  onClick={() => 
+                    setRecipes(recipes.filter((item) => item.id !== recipe.id))
+                  }
+                  >
+                    Remove Recipe
+                  </button>
+
                 {isSelected && selectedIngredients && (
                   <div className="recipe-details">
                     <h4>Ingredients</h4>
