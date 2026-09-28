@@ -1,3 +1,6 @@
+import { useState } from "react";
+import AddReviewForm from "./AddReviewForm";
+
 export const recipeReviews = [
   {
     id: 1,
@@ -128,12 +131,19 @@ export const recipeReviews = [
 ];
 
 function Reviews() {
+  const [reviews, setReviews] = useState(recipeReviews);
+
   return (
     <section className="reviews">
       <h2>Recipe Reviews</h2>
 
+      <AddReviewForm
+        reviews={reviews}
+        setReviews={setReviews}
+      />
+
       <div className="review-list">
-        {recipeReviews.map((review) => (
+        {reviews.map((review) => (
           <article className="review-card" key={review.id}>
             <h3>{review.recipeName}</h3>
 
@@ -142,6 +152,17 @@ function Reviews() {
             </p>
 
             <p>{review.comment}</p>
+
+            <button
+              type="button"
+              onClick={() =>
+                setReviews(
+                  reviews.filter((item) => item.id !== review.id)
+                )
+              }
+            >
+              Remove Review
+            </button>
           </article>
         ))}
       </div>
