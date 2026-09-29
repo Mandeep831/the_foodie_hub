@@ -263,7 +263,7 @@ function IngredientsList({
             .includes(searchTerm.trim().toLowerCase())
         )
       )
-    : [];
+    : ingredientsData;
 
   return (
     <section className="ingredients-list">
