@@ -241,25 +241,42 @@ export const recipeIngredients = [
   },
 ];
 
-function IngredientsList() {
+interface IngredientsListProps {
+  activityCount: number;
+  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function IngredientsList({
+  activityCount,
+  setActivityCount,
+}: IngredientsListProps) {
   const [ingredientsData, setIngredientsData] =
     useState(recipeIngredients);
 
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredRecipes = searchTerm.trim()
-  ? ingredientsData.filter((recipe) =>
-      recipe.ingredients.some((ingredient) =>
-        ingredient.name
-          .toLowerCase()
-          .includes(searchTerm.trim().toLowerCase())
+    ? ingredientsData.filter((recipe) =>
+        recipe.ingredients.some((ingredient) =>
+          ingredient.name
+            .toLowerCase()
+            .includes(searchTerm.trim().toLowerCase())
+        )
       )
-    )
-  : [];
+    : [];
 
   return (
     <section className="ingredients-list">
       <h2>Recipe Ingredients</h2>
+
+      <p>Shared Activity Count: {activityCount}</p>
+
+      <button
+        type="button"
+        onClick={() => setActivityCount(activityCount + 1)}
+      >
+        Increase Activity
+      </button>
 
       <IngredientSearchForm
         searchTerm={searchTerm}
@@ -267,9 +284,9 @@ function IngredientsList() {
       />
 
       <AddIngredientForm
-  ingredientsData={ingredientsData}
-  setIngredientsData={setIngredientsData}
-/>
+        ingredientsData={ingredientsData}
+        setIngredientsData={setIngredientsData}
+      />
 
       <div className="ingredient-cards">
         {filteredRecipes.map((recipe) => (
@@ -282,32 +299,34 @@ function IngredientsList() {
 
               <ul>
                 {recipe.ingredients.map((ingredient) => (
-  <li key={ingredient.name}>
-    <strong>{ingredient.name}</strong>
-    <p>{ingredient.description}</p>
+                  <li key={ingredient.name}>
+                    <strong>{ingredient.name}</strong>
+                    <p>{ingredient.description}</p>
 
-    <button
-      type="button"
-      onClick={() =>
-        setIngredientsData(
-          ingredientsData.map((item) =>
-            item.recipeName === recipe.recipeName
-              ? {
-                  ...item,
-                  ingredients: item.ingredients.filter(
-                    (currentIngredient) =>
-                      currentIngredient.name !== ingredient.name
-                  ),
-                }
-              : item
-          )
-        )
-      }
-    >
-      Remove Ingredient
-    </button>
-  </li>
-))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIngredientsData(
+                          ingredientsData.map((item) =>
+                            item.recipeName === recipe.recipeName
+                              ? {
+                                  ...item,
+                                  ingredients:
+                                    item.ingredients.filter(
+                                      (currentIngredient) =>
+                                        currentIngredient.name !==
+                                        ingredient.name
+                                    ),
+                                }
+                              : item
+                          )
+                        )
+                      }
+                    >
+                      Remove Ingredient
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
           </article>

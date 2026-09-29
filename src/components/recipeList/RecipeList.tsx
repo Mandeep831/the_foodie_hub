@@ -3,7 +3,15 @@ import { recipeIngredients } from "../ingredients/IngredientsList";
 import { recipeReviews } from "../Reviews/review";
 import AddRecipeForm from "./AddRecipeForm";
 
-function RecipeList() {
+interface RecipeListProps {
+  activityCount: number;
+  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function RecipeList({
+  activityCount,
+  setActivityCount,
+}: RecipeListProps) {
   const [recipes, setRecipes] = useState([
     {
       id: 1,
@@ -68,6 +76,15 @@ function RecipeList() {
     <section className="recipe-list">
       <h2>Popular Recipes</h2>
 
+      <p>Shared Activity Count: {activityCount}</p>
+
+      <button
+        type="button"
+        onClick={() => setActivityCount(activityCount + 1)}
+      >
+        Increase Activity
+      </button>
+
       <AddRecipeForm
         recipes={recipes}
         setRecipes={setRecipes}
@@ -98,7 +115,9 @@ function RecipeList() {
                 <button
                   type="button"
                   onClick={() =>
-                    setSelectedRecipe(isSelected ? null : recipe.id)
+                    setSelectedRecipe(
+                      isSelected ? null : recipe.id
+                    )
                   }
                 >
                   {isSelected
@@ -108,12 +127,16 @@ function RecipeList() {
 
                 <button
                   type="button"
-                  onClick={() => 
-                    setRecipes(recipes.filter((item) => item.id !== recipe.id))
+                  onClick={() =>
+                    setRecipes(
+                      recipes.filter(
+                        (item) => item.id !== recipe.id
+                      )
+                    )
                   }
-                  >
-                    Remove Recipe
-                  </button>
+                >
+                  Remove Recipe
+                </button>
 
                 {isSelected && selectedIngredients && (
                   <div className="recipe-details">
