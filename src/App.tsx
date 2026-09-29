@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, NavLink } from "react-router-dom";
 import RecipeList from "./components/recipeList/RecipeList";
 import IngredientsList from "./components/ingredients/IngredientsList";
 import Review from "./components/Reviews/review";
@@ -9,6 +9,11 @@ function App() {
     <>
       <header>
         <h1>FoodieHub</h1>
+        <nav>
+          <NavLink to="/recipes">Recipes</NavLink>
+          <NavLink to="/ingredients">Ingredients</NavLink>
+          <NavLink to="/reviews">Reviews</NavLink>
+        </nav>
       </header>
 
       <main>
