@@ -160,28 +160,43 @@ function Reviews({
       />
 
       <div className="review-list">
-        {reviews.map((review) => (
-          <article className="review-card" key={review.id}>
-            <h3>{review.recipeName}</h3>
+        {Array.from(
+          new Set(reviews.map((review) => review.recipeName))
+        ).map((recipeName) => {
+          const recipeReviews = reviews.filter(
+            (review) => review.recipeName === recipeName
+          );
 
-            <p>
-              <strong>{review.reviewer}</strong> — {review.rating}/5
-            </p>
+          return (
+            <article className="review-card" key={recipeName}>
+              <h3>{recipeName}</h3>
 
-            <p>{review.comment}</p>
+              {recipeReviews.map((review) => (
+                <div className="recipe-review" key={review.id}>
+                  <p>
+                    <strong>{review.reviewer}</strong> —{" "}
+                    {review.rating}/5
+                  </p>
 
-            <button
-              type="button"
-              onClick={() =>
-                setReviews(
-                  reviews.filter((item) => item.id !== review.id)
-                )
-              }
-            >
-              Remove Review
-            </button>
-          </article>
-        ))}
+                  <p>{review.comment}</p>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviews(
+                        reviews.filter(
+                          (item) => item.id !== review.id
+                        )
+                      )
+                    }
+                  >
+                    Remove Review
+                  </button>
+                </div>
+              ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );
