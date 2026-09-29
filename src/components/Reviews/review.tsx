@@ -130,12 +130,29 @@ export const recipeReviews = [
   },
 ];
 
-function Reviews() {
+interface ReviewsProps {
+  activityCount: number;
+  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function Reviews({
+  activityCount,
+  setActivityCount,
+}: ReviewsProps) {
   const [reviews, setReviews] = useState(recipeReviews);
 
   return (
     <section className="reviews">
       <h2>Recipe Reviews</h2>
+
+      <p>Shared Activity Count: {activityCount}</p>
+
+      <button
+        type="button"
+        onClick={() => setActivityCount(activityCount + 1)}
+      >
+        Increase Activity
+      </button>
 
       <AddReviewForm
         reviews={reviews}
