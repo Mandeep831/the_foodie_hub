@@ -25,6 +25,32 @@ header h1 {
   font-size: 2rem;
 }
 
+/* Navigation */
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 18px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+
+nav a:hover {
+  background-color: #256628;
+}
+
+nav a.active {
+  background-color: white;
+  color: #2e7d32;
+}
+
 /* Main page */
 
 main {
@@ -84,6 +110,8 @@ button {
   padding: 10px 14px;
   font-size: 0.95rem;
   cursor: pointer;
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 button:hover {
@@ -214,6 +242,39 @@ footer p {
   margin: 5px;
 }
 
+/* Ingredient Forms */
+
+.ingredient-search-form,
+.add-ingredient-form {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ingredient-search-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.ingredient-search-form input,
+.add-ingredient-form input,
+.add-ingredient-form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.add-ingredient-form h3 {
+  color: #2e7d32;
+  margin-top: 0;
+}
+
 /* Responsive layout */
 
 @media (max-width: 900px) {
@@ -235,3 +296,4 @@ footer p {
     padding: 0 15px;
   }
 }
+

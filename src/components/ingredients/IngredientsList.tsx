@@ -1,11 +1,14 @@
+import { useState } from "react";
+import IngredientSearchForm from "./IngredientSearchForm";
+import AddIngredientForm from "./AddIngredientForm";
+
 export const recipeIngredients = [
   {
     recipeName: "Paneer Tikka",
     ingredients: [
       {
         name: "Paneer",
-        description:
-          "Indian cottage cheese used as the main ingredient.",
+        description: "Indian cottage cheese used as the main ingredient.",
       },
       {
         name: "Yogurt",
@@ -14,13 +17,11 @@ export const recipeIngredients = [
       },
       {
         name: "Bell Peppers",
-        description:
-          "Add colour, flavour, and crunch to the dish.",
+        description: "Add colour, flavour, and crunch to the dish.",
       },
       {
         name: "Spices",
-        description:
-          "Add flavour, aroma, and seasoning.",
+        description: "Add flavour, aroma, and seasoning.",
       },
     ],
   },
@@ -34,13 +35,11 @@ export const recipeIngredients = [
       },
       {
         name: "Flour",
-        description:
-          "Used to prepare the dough for the bhature.",
+        description: "Used to prepare the dough for the bhature.",
       },
       {
         name: "Onion",
-        description:
-          "Adds flavour and helps create the curry base.",
+        description: "Adds flavour and helps create the curry base.",
       },
       {
         name: "Tomato",
@@ -59,13 +58,11 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Pizza Dough",
-        description:
-          "Forms the base of the pizza.",
+        description: "Forms the base of the pizza.",
       },
       {
         name: "Tomato Sauce",
-        description:
-          "Adds flavour and moisture to the pizza.",
+        description: "Adds flavour and moisture to the pizza.",
       },
       {
         name: "Mozzarella Cheese",
@@ -74,8 +71,7 @@ export const recipeIngredients = [
       },
       {
         name: "Basil",
-        description:
-          "Adds a fresh flavour and pleasant aroma.",
+        description: "Adds a fresh flavour and pleasant aroma.",
       },
     ],
   },
@@ -84,18 +80,15 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Rice",
-        description:
-          "Forms the main base of the dish.",
+        description: "Forms the main base of the dish.",
       },
       {
         name: "Carrots",
-        description:
-          "Add sweetness, colour, and texture.",
+        description: "Add sweetness, colour, and texture.",
       },
       {
         name: "Green Peas",
-        description:
-          "Add colour and a slightly sweet flavour.",
+        description: "Add colour and a slightly sweet flavour.",
       },
       {
         name: "Soy Sauce",
@@ -129,8 +122,7 @@ export const recipeIngredients = [
       },
       {
         name: "Turmeric",
-        description:
-          "Adds colour and a mild earthy flavour.",
+        description: "Adds colour and a mild earthy flavour.",
       },
     ],
   },
@@ -139,8 +131,7 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Noodles",
-        description:
-          "Form the main base of the dish.",
+        description: "Form the main base of the dish.",
       },
       {
         name: "Chicken",
@@ -149,8 +140,7 @@ export const recipeIngredients = [
       },
       {
         name: "Carrots",
-        description:
-          "Add colour, sweetness, and crunch.",
+        description: "Add colour, sweetness, and crunch.",
       },
       {
         name: "Bell Peppers",
@@ -179,8 +169,7 @@ export const recipeIngredients = [
       },
       {
         name: "Onion",
-        description:
-          "Adds sweetness and flavour to the dish.",
+        description: "Adds sweetness and flavour to the dish.",
       },
       {
         name: "Yogurt",
@@ -209,18 +198,15 @@ export const recipeIngredients = [
       },
       {
         name: "Potatoes",
-        description:
-          "Used to prepare the spiced filling.",
+        description: "Used to prepare the spiced filling.",
       },
       {
         name: "Onion",
-        description:
-          "Adds flavour to the potato filling.",
+        description: "Adds flavour to the potato filling.",
       },
       {
         name: "Spices",
-        description:
-          "Add flavour and seasoning to the filling.",
+        description: "Add flavour and seasoning to the filling.",
       },
     ],
   },
@@ -239,8 +225,7 @@ export const recipeIngredients = [
       },
       {
         name: "Lettuce",
-        description:
-          "Adds freshness and crunch.",
+        description: "Adds freshness and crunch.",
       },
       {
         name: "Tomato",
@@ -256,24 +241,94 @@ export const recipeIngredients = [
   },
 ];
 
-function IngredientsList() {
+interface IngredientsListProps {
+  activityCount: number;
+  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function IngredientsList({
+  activityCount,
+  setActivityCount,
+}: IngredientsListProps) {
+  const [ingredientsData, setIngredientsData] =
+    useState(recipeIngredients);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredRecipes = searchTerm.trim()
+    ? ingredientsData.filter((recipe) =>
+        recipe.ingredients.some((ingredient) =>
+          ingredient.name
+            .toLowerCase()
+            .includes(searchTerm.trim().toLowerCase())
+        )
+      )
+    : [];
+
   return (
     <section className="ingredients-list">
       <h2>Recipe Ingredients</h2>
 
-      <div className="ingredient-cards">
-        {recipeIngredients.map((recipe) => (
-          <article className="ingredient-card" key={recipe.recipeName}>
-            <h3>{recipe.recipeName}</h3>
+      <p>Shared Activity Count: {activityCount}</p>
 
-            <ul>
-              {recipe.ingredients.map((ingredient) => (
-                <li key={ingredient.name}>
-                  <strong>{ingredient.name}</strong>
-                  <p>{ingredient.description}</p>
-                </li>
-              ))}
-            </ul>
+      <button
+        type="button"
+        onClick={() => setActivityCount(activityCount + 1)}
+      >
+        Increase Activity
+      </button>
+
+      <IngredientSearchForm
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+
+      <AddIngredientForm
+        ingredientsData={ingredientsData}
+        setIngredientsData={setIngredientsData}
+      />
+
+      <div className="ingredient-cards">
+        {filteredRecipes.map((recipe) => (
+          <article
+            className="ingredient-card"
+            key={recipe.recipeName}
+          >
+            <div className="ingredient-content">
+              <h3>{recipe.recipeName}</h3>
+
+              <ul>
+                {recipe.ingredients.map((ingredient) => (
+                  <li key={ingredient.name}>
+                    <strong>{ingredient.name}</strong>
+                    <p>{ingredient.description}</p>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIngredientsData(
+                          ingredientsData.map((item) =>
+                            item.recipeName === recipe.recipeName
+                              ? {
+                                  ...item,
+                                  ingredients:
+                                    item.ingredients.filter(
+                                      (currentIngredient) =>
+                                        currentIngredient.name !==
+                                        ingredient.name
+                                    ),
+                                }
+                              : item
+                          )
+                        )
+                      }
+                    >
+                      Remove Ingredient
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </article>
         ))}
       </div>

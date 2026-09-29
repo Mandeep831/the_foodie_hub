@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { recipeIngredients } from "../ingredients/IngredientsList";
 import { recipeReviews } from "../Reviews/review";
+import AddRecipeForm from "./AddRecipeForm";
 
-function RecipeList() {
-  const recipes = [
+interface RecipeListProps {
+  activityCount: number;
+  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function RecipeList({
+  activityCount,
+  setActivityCount,
+}: RecipeListProps) {
+  const [recipes, setRecipes] = useState([
     {
       id: 1,
       name: "Paneer Tikka",
@@ -57,7 +66,7 @@ function RecipeList() {
       description:
         "Soft or crispy tortillas filled with vegetables, beans, and toppings.",
     },
-  ];
+  ]);
 
   const [selectedRecipe, setSelectedRecipe] = useState<number | null>(
     null
@@ -66,6 +75,20 @@ function RecipeList() {
   return (
     <section className="recipe-list">
       <h2>Popular Recipes</h2>
+
+      <p>Shared Activity Count: {activityCount}</p>
+
+      <button
+        type="button"
+        onClick={() => setActivityCount(activityCount + 1)}
+      >
+        Increase Activity
+      </button>
+
+      <AddRecipeForm
+        recipes={recipes}
+        setRecipes={setRecipes}
+      />
 
       <div className="recipe-cards">
         {recipes.map((recipe) => {
@@ -92,12 +115,27 @@ function RecipeList() {
                 <button
                   type="button"
                   onClick={() =>
-                    setSelectedRecipe(isSelected ? null : recipe.id)
+                    setSelectedRecipe(
+                      isSelected ? null : recipe.id
+                    )
                   }
                 >
                   {isSelected
                     ? "Hide Ingredients and Reviews"
                     : "View Ingredients"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRecipes(
+                      recipes.filter(
+                        (item) => item.id !== recipe.id
+                      )
+                    )
+                  }
+                >
+                  Remove Recipe
                 </button>
 
                 {isSelected && selectedIngredients && (
