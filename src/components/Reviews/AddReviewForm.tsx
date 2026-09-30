@@ -10,23 +10,38 @@ interface Review {
 
 interface AddReviewFormProps {
   reviews: Review[];
-  setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
+
+  setReviews: React.Dispatch<
+    React.SetStateAction<Review[]>
+  >;
+
+  recipeNames: string[];
 }
 
 function AddReviewForm({
   reviews,
   setReviews,
+  recipeNames,
 }: AddReviewFormProps) {
-  const [recipeName, setRecipeName] = useState("");
-  const [reviewer, setReviewer] = useState("");
-  const [rating, setRating] = useState("");
-  const [comment, setComment] = useState("");
+  const [recipeName, setRecipeName] =
+    useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [reviewer, setReviewer] =
+    useState("");
+
+  const [rating, setRating] =
+    useState("");
+
+  const [comment, setComment] =
+    useState("");
+
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     if (
-      recipeName.trim() === "" ||
+      recipeName === "" ||
       reviewer.trim() === "" ||
       rating === "" ||
       comment.trim() === ""
@@ -36,13 +51,16 @@ function AddReviewForm({
 
     const newReview: Review = {
       id: Date.now(),
-      recipeName: recipeName.trim(),
+      recipeName: recipeName,
       reviewer: reviewer.trim(),
       rating: Number(rating),
       comment: comment.trim(),
     };
 
-    setReviews([...reviews, newReview]);
+    setReviews([
+      ...reviews,
+      newReview,
+    ]);
 
     setRecipeName("");
     setReviewer("");
@@ -54,28 +72,45 @@ function AddReviewForm({
     <form onSubmit={handleSubmit}>
       <h3>Add a Review</h3>
 
-      <input
-        type="text"
-        placeholder="Recipe name"
+      <select
         value={recipeName}
-        onChange={(event) => setRecipeName(event.target.value)}
+        onChange={(event) =>
+          setRecipeName(event.target.value)
+        }
         required
-      />
+      >
+        <option value="">
+          Select Recipe
+        </option>
+
+        {recipeNames.map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </select>
 
       <input
         type="text"
         placeholder="Your name"
         value={reviewer}
-        onChange={(event) => setReviewer(event.target.value)}
+        onChange={(event) =>
+          setReviewer(event.target.value)
+        }
         required
       />
 
       <select
         value={rating}
-        onChange={(event) => setRating(event.target.value)}
+        onChange={(event) =>
+          setRating(event.target.value)
+        }
         required
       >
-        <option value="">Select rating</option>
+        <option value="">
+          Select rating
+        </option>
+
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -87,11 +122,15 @@ function AddReviewForm({
         type="text"
         placeholder="Write your review"
         value={comment}
-        onChange={(event) => setComment(event.target.value)}
+        onChange={(event) =>
+          setComment(event.target.value)
+        }
         required
       />
 
-      <button type="submit">Add Review</button>
+      <button type="submit">
+        Add Review
+      </button>
     </form>
   );
 }
