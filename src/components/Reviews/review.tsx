@@ -1,145 +1,173 @@
-import { useState } from "react";
 import AddReviewForm from "./AddReviewForm";
 
-export const recipeReviews = [
+export interface Review {
+  id: number;
+  recipeName: string;
+  reviewer: string;
+  rating: number;
+  comment: string;
+}
+
+export const recipeReviews: Review[] = [
   {
     id: 1,
     recipeName: "Paneer Tikka",
-    reviewer: "Simran",
+    reviewer: "Aman",
     rating: 5,
-    comment: "Very tasty and easy to make!",
+    comment: "Very tasty and full of flavour!",
   },
   {
     id: 2,
     recipeName: "Paneer Tikka",
-    reviewer: "Aman",
+    reviewer: "Simran",
     rating: 4,
-    comment: "The paneer was soft and full of flavour.",
+    comment: "Really good, especially with the chutney.",
   },
   {
     id: 3,
     recipeName: "Chole Bhature",
-    reviewer: "Priya",
+    reviewer: "Harpreet",
     rating: 5,
-    comment: "The recipe was delicious and filling.",
+    comment: "The chole was delicious and spicy.",
   },
   {
     id: 4,
     recipeName: "Chole Bhature",
-    reviewer: "Mandeep",
+    reviewer: "Jasleen",
     rating: 4,
-    comment: "The chickpeas had a great taste.",
+    comment: "Bhature was soft and crispy.",
   },
   {
     id: 5,
     recipeName: "Margherita Pizza",
-    reviewer: "Simran",
+    reviewer: "Daniel",
     rating: 5,
-    comment: "Simple ingredients and great taste!",
+    comment: "Simple and delicious pizza.",
   },
   {
     id: 6,
     recipeName: "Margherita Pizza",
-    reviewer: "Gagandeep",
+    reviewer: "Emily",
     rating: 4,
-    comment: "The pizza was cheesy and delicious.",
+    comment: "Fresh and tasty.",
   },
   {
     id: 7,
     recipeName: "Vegetable Fried Rice",
-    reviewer: "Mandeep",
-    rating: 5,
-    comment: "Quick to prepare and full of flavour.",
+    reviewer: "Raj",
+    rating: 4,
+    comment: "Good flavour and lots of vegetables.",
   },
   {
     id: 8,
     recipeName: "Vegetable Fried Rice",
-    reviewer: "Aman",
-    rating: 4,
-    comment: "The vegetables added a nice crunch.",
+    reviewer: "Neha",
+    rating: 5,
+    comment: "Really enjoyed this fried rice.",
   },
   {
     id: 9,
     recipeName: "Aloo Gobi",
-    reviewer: "Simran",
-    rating: 4,
-    comment: "A delicious homemade Indian dish.",
+    reviewer: "Kiran",
+    rating: 5,
+    comment: "Very flavourful and comforting.",
   },
   {
     id: 10,
     recipeName: "Aloo Gobi",
-    reviewer: "Priya",
-    rating: 5,
-    comment: "The potatoes and cauliflower tasted great together.",
+    reviewer: "Manpreet",
+    rating: 4,
+    comment: "Tasty and nicely spiced.",
   },
   {
     id: 11,
     recipeName: "Chicken Noodles",
-    reviewer: "Aman",
+    reviewer: "Arjun",
     rating: 5,
-    comment: "The noodles were tasty and filling.",
+    comment: "The noodles were delicious.",
   },
   {
     id: 12,
     recipeName: "Chicken Noodles",
-    reviewer: "Gagandeep",
+    reviewer: "Nav",
     rating: 4,
-    comment: "A quick and satisfying meal.",
+    comment: "Good combination of chicken and vegetables.",
   },
   {
     id: 13,
     recipeName: "Vegetable Biryani",
-    reviewer: "Mandeep",
+    reviewer: "Riya",
     rating: 5,
-    comment: "The rice was fragrant and full of flavour.",
+    comment: "Aromatic and delicious.",
   },
   {
     id: 14,
     recipeName: "Vegetable Biryani",
-    reviewer: "Simran",
+    reviewer: "Gurpreet",
     rating: 4,
-    comment: "The vegetables made the biryani delicious.",
+    comment: "Lots of flavour and nicely cooked rice.",
   },
   {
     id: 15,
     recipeName: "Masala Dosa",
-    reviewer: "Priya",
+    reviewer: "Anjali",
     rating: 5,
-    comment: "The dosa was crispy and delicious.",
+    comment: "Crispy and delicious.",
   },
   {
     id: 16,
     recipeName: "Masala Dosa",
-    reviewer: "Aman",
+    reviewer: "Sonia",
     rating: 4,
-    comment: "The potato filling was very tasty.",
+    comment: "The potato filling was really tasty.",
   },
   {
     id: 17,
     recipeName: "Tacos",
-    reviewer: "Gagandeep",
+    reviewer: "Chris",
     rating: 5,
-    comment: "The tacos were fresh and full of flavour.",
+    comment: "Fresh and delicious tacos.",
   },
   {
     id: 18,
     recipeName: "Tacos",
-    reviewer: "Mandeep",
+    reviewer: "Maya",
     rating: 4,
-    comment: "The toppings made the tacos delicious.",
+    comment: "Great combination of toppings.",
   },
 ];
 
 interface ReviewsProps {
   activityCount: number;
-  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+  setActivityCount: React.Dispatch<
+    React.SetStateAction<number>
+  >;
+
+  reviews: Review[];
+
+  setReviews: React.Dispatch<
+    React.SetStateAction<Review[]>
+  >;
+
+  recipeNames: string[];
 }
 
 function Reviews({
   activityCount,
   setActivityCount,
+  reviews,
+  setReviews,
+  recipeNames,
 }: ReviewsProps) {
-  const [reviews, setReviews] = useState(recipeReviews);
+  const groupedReviews = recipeNames.map(
+    (recipeName) => ({
+      recipeName,
+      reviews: reviews.filter(
+        (review) =>
+          review.recipeName === recipeName
+      ),
+    })
+  );
 
   return (
     <section className="reviews">
@@ -149,7 +177,9 @@ function Reviews({
 
       <button
         type="button"
-        onClick={() => setActivityCount(activityCount + 1)}
+        onClick={() =>
+          setActivityCount(activityCount + 1)
+        }
       >
         Increase Activity
       </button>
@@ -157,29 +187,50 @@ function Reviews({
       <AddReviewForm
         reviews={reviews}
         setReviews={setReviews}
+        recipeNames={recipeNames}
       />
 
       <div className="review-list">
-        {reviews.map((review) => (
-          <article className="review-card" key={review.id}>
-            <h3>{review.recipeName}</h3>
+        {groupedReviews.map((recipe) => (
+          <article
+            className="review-card"
+            key={recipe.recipeName}
+          >
+            <h3>{recipe.recipeName}</h3>
 
-            <p>
-              <strong>{review.reviewer}</strong> — {review.rating}/5
-            </p>
+            {recipe.reviews.length > 0 ? (
+              recipe.reviews.map((review) => (
+                <div
+                  className="review-item"
+                  key={review.id}
+                >
+                  <p>
+                    <strong>
+                      {review.reviewer}
+                    </strong>{" "}
+                    — {review.rating}/5
+                  </p>
 
-            <p>{review.comment}</p>
+                  <p>{review.comment}</p>
 
-            <button
-              type="button"
-              onClick={() =>
-                setReviews(
-                  reviews.filter((item) => item.id !== review.id)
-                )
-              }
-            >
-              Remove Review
-            </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviews(
+                        reviews.filter(
+                          (item) =>
+                            item.id !== review.id
+                        )
+                      )
+                    }
+                  >
+                    Remove Review
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p>No reviews available yet.</p>
+            )}
           </article>
         ))}
       </div>

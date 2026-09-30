@@ -2,13 +2,24 @@ import { useState } from "react";
 import IngredientSearchForm from "./IngredientSearchForm";
 import AddIngredientForm from "./AddIngredientForm";
 
-export const recipeIngredients = [
+export interface Ingredient {
+  name: string;
+  description: string;
+}
+
+export interface RecipeIngredients {
+  recipeName: string;
+  ingredients: Ingredient[];
+}
+
+export const recipeIngredients: RecipeIngredients[] = [
   {
     recipeName: "Paneer Tikka",
     ingredients: [
       {
         name: "Paneer",
-        description: "Indian cottage cheese used as the main ingredient.",
+        description:
+          "Indian cottage cheese used as the main ingredient.",
       },
       {
         name: "Yogurt",
@@ -17,11 +28,13 @@ export const recipeIngredients = [
       },
       {
         name: "Bell Peppers",
-        description: "Add colour, flavour, and crunch to the dish.",
+        description:
+          "Add colour, flavour, and crunch to the dish.",
       },
       {
         name: "Spices",
-        description: "Add flavour, aroma, and seasoning.",
+        description:
+          "Add flavour, aroma, and seasoning.",
       },
     ],
   },
@@ -35,11 +48,13 @@ export const recipeIngredients = [
       },
       {
         name: "Flour",
-        description: "Used to prepare the dough for the bhature.",
+        description:
+          "Used to prepare the dough for the bhature.",
       },
       {
         name: "Onion",
-        description: "Adds flavour and helps create the curry base.",
+        description:
+          "Adds flavour and helps create the curry base.",
       },
       {
         name: "Tomato",
@@ -58,11 +73,13 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Pizza Dough",
-        description: "Forms the base of the pizza.",
+        description:
+          "Forms the base of the pizza.",
       },
       {
         name: "Tomato Sauce",
-        description: "Adds flavour and moisture to the pizza.",
+        description:
+          "Adds flavour and moisture to the pizza.",
       },
       {
         name: "Mozzarella Cheese",
@@ -71,7 +88,8 @@ export const recipeIngredients = [
       },
       {
         name: "Basil",
-        description: "Adds a fresh flavour and pleasant aroma.",
+        description:
+          "Adds a fresh flavour and pleasant aroma.",
       },
     ],
   },
@@ -80,15 +98,18 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Rice",
-        description: "Forms the main base of the dish.",
+        description:
+          "Forms the main base of the dish.",
       },
       {
         name: "Carrots",
-        description: "Add sweetness, colour, and texture.",
+        description:
+          "Add sweetness, colour, and texture.",
       },
       {
         name: "Green Peas",
-        description: "Add colour and a slightly sweet flavour.",
+        description:
+          "Add colour and a slightly sweet flavour.",
       },
       {
         name: "Soy Sauce",
@@ -122,7 +143,8 @@ export const recipeIngredients = [
       },
       {
         name: "Turmeric",
-        description: "Adds colour and a mild earthy flavour.",
+        description:
+          "Adds colour and a mild earthy flavour.",
       },
     ],
   },
@@ -131,7 +153,8 @@ export const recipeIngredients = [
     ingredients: [
       {
         name: "Noodles",
-        description: "Form the main base of the dish.",
+        description:
+          "Form the main base of the dish.",
       },
       {
         name: "Chicken",
@@ -140,7 +163,8 @@ export const recipeIngredients = [
       },
       {
         name: "Carrots",
-        description: "Add colour, sweetness, and crunch.",
+        description:
+          "Add colour, sweetness, and crunch.",
       },
       {
         name: "Bell Peppers",
@@ -169,7 +193,8 @@ export const recipeIngredients = [
       },
       {
         name: "Onion",
-        description: "Adds sweetness and flavour to the dish.",
+        description:
+          "Adds sweetness and flavour to the dish.",
       },
       {
         name: "Yogurt",
@@ -198,15 +223,18 @@ export const recipeIngredients = [
       },
       {
         name: "Potatoes",
-        description: "Used to prepare the spiced filling.",
+        description:
+          "Used to prepare the spiced filling.",
       },
       {
         name: "Onion",
-        description: "Adds flavour to the potato filling.",
+        description:
+          "Adds flavour to the potato filling.",
       },
       {
         name: "Spices",
-        description: "Add flavour and seasoning to the filling.",
+        description:
+          "Add flavour and seasoning to the filling.",
       },
     ],
   },
@@ -225,7 +253,8 @@ export const recipeIngredients = [
       },
       {
         name: "Lettuce",
-        description: "Adds freshness and crunch.",
+        description:
+          "Adds freshness and crunch.",
       },
       {
         name: "Tomato",
@@ -243,16 +272,23 @@ export const recipeIngredients = [
 
 interface IngredientsListProps {
   activityCount: number;
-  setActivityCount: React.Dispatch<React.SetStateAction<number>>;
+  setActivityCount: React.Dispatch<
+    React.SetStateAction<number>
+  >;
+
+  ingredientsData: RecipeIngredients[];
+
+  setIngredientsData: React.Dispatch<
+    React.SetStateAction<RecipeIngredients[]>
+  >;
 }
 
 function IngredientsList({
   activityCount,
   setActivityCount,
+  ingredientsData,
+  setIngredientsData,
 }: IngredientsListProps) {
-  const [ingredientsData, setIngredientsData] =
-    useState(recipeIngredients);
-
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredRecipes = searchTerm.trim()
@@ -260,7 +296,9 @@ function IngredientsList({
         recipe.ingredients.some((ingredient) =>
           ingredient.name
             .toLowerCase()
-            .includes(searchTerm.trim().toLowerCase())
+            .includes(
+              searchTerm.trim().toLowerCase()
+            )
         )
       )
     : [];
@@ -273,7 +311,9 @@ function IngredientsList({
 
       <button
         type="button"
-        onClick={() => setActivityCount(activityCount + 1)}
+        onClick={() =>
+          setActivityCount(activityCount + 1)
+        }
       >
         Increase Activity
       </button>
@@ -298,35 +338,46 @@ function IngredientsList({
               <h3>{recipe.recipeName}</h3>
 
               <ul>
-                {recipe.ingredients.map((ingredient) => (
-                  <li key={ingredient.name}>
-                    <strong>{ingredient.name}</strong>
-                    <p>{ingredient.description}</p>
+                {recipe.ingredients.map(
+                  (ingredient) => (
+                    <li key={ingredient.name}>
+                      <strong>
+                        {ingredient.name}
+                      </strong>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setIngredientsData(
-                          ingredientsData.map((item) =>
-                            item.recipeName === recipe.recipeName
-                              ? {
-                                  ...item,
-                                  ingredients:
-                                    item.ingredients.filter(
-                                      (currentIngredient) =>
-                                        currentIngredient.name !==
-                                        ingredient.name
-                                    ),
-                                }
-                              : item
+                      <p>
+                        {ingredient.description}
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIngredientsData(
+                            ingredientsData.map(
+                              (item) =>
+                                item.recipeName ===
+                                recipe.recipeName
+                                  ? {
+                                      ...item,
+                                      ingredients:
+                                        item.ingredients.filter(
+                                          (
+                                            currentIngredient
+                                          ) =>
+                                            currentIngredient.name !==
+                                            ingredient.name
+                                        ),
+                                    }
+                                  : item
+                            )
                           )
-                        )
-                      }
-                    >
-                      Remove Ingredient
-                    </button>
-                  </li>
-                ))}
+                        }
+                      >
+                        Remove Ingredient
+                      </button>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           </article>

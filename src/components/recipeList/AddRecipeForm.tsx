@@ -1,4 +1,9 @@
 import { useState } from "react";
+import type {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+} from "react";
 
 interface Recipe {
   id: number;
@@ -6,29 +11,71 @@ interface Recipe {
   description: string;
 }
 
-interface AddRecipeFormProps {
-  recipes: Recipe[];
-  setRecipes: React.Dispatch<React.SetStateAction<Recipe[]>>;
+interface Ingredient {
+  name: string;
+  description: string;
 }
 
-function AddRecipeForm({ recipes, setRecipes }: AddRecipeFormProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+interface RecipeIngredients {
+  recipeName: string;
+  ingredients: Ingredient[];
+}
 
-  const handleSubmit = (event: React.FormEvent) => {
+interface AddRecipeFormProps {
+  recipes: Recipe[];
+  setRecipes: Dispatch<SetStateAction<Recipe[]>>;
+
+  ingredientsData: RecipeIngredients[];
+  setIngredientsData: Dispatch<
+    SetStateAction<RecipeIngredients[]>
+  >;
+}
+
+function AddRecipeForm({
+  recipes,
+  setRecipes,
+  ingredientsData,
+  setIngredientsData,
+}: AddRecipeFormProps) {
+  const [name, setName] = useState("");
+  const [description, setDescription] =
+    useState("");
+
+  const handleSubmit = (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
-    if (!name.trim() || !description.trim()) {
+    if (
+      !name.trim() ||
+      !description.trim()
+    ) {
       return;
     }
 
-    const newRecipe = {
-      id: recipes.length + 1,
-      name: name.trim(),
+    const newRecipeName = name.trim();
+
+    const newRecipe: Recipe = {
+      id: Date.now(),
+      name: newRecipeName,
       description: description.trim(),
     };
 
-    setRecipes([...recipes, newRecipe]);
+    // Add the new recipe
+    setRecipes([
+      ...recipes,
+      newRecipe,
+    ]);
+
+    // Create an empty ingredient list
+    // for the new recipe
+    setIngredientsData([
+      ...ingredientsData,
+      {
+        recipeName: newRecipeName,
+        ingredients: [],
+      },
+    ]);
 
     setName("");
     setDescription("");
@@ -42,17 +89,23 @@ function AddRecipeForm({ recipes, setRecipes }: AddRecipeFormProps) {
         type="text"
         placeholder="Recipe name"
         value={name}
-        onChange={(event) => setName(event.target.value)}
+        onChange={(event) =>
+          setName(event.target.value)
+        }
       />
 
       <input
         type="text"
         placeholder="Recipe description"
         value={description}
-        onChange={(event) => setDescription(event.target.value)}
+        onChange={(event) =>
+          setDescription(event.target.value)
+        }
       />
 
-      <button type="submit">Add Recipe</button>
+      <button type="submit">
+        Add Recipe
+      </button>
     </form>
   );
 }
