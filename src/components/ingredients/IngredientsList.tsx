@@ -301,7 +301,7 @@ function IngredientsList({
             )
         )
       )
-    : [];
+    : ingredientsData;
 
   return (
     <section className="ingredients-list">
