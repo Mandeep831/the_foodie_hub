@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import "./App.css";
 
@@ -13,9 +12,10 @@ import RecipeList from "./components/recipeList/RecipeList";
 import { useRecipes } from "./hooks/useRecipes";
 
 import IngredientsList, {
-  recipeIngredients,
   type RecipeIngredients,
 } from "./components/ingredients/IngredientsList";
+
+import { recipeIngredients } from "./data/ingredients";
 
 import Reviews, {
   recipeReviews,
@@ -36,7 +36,8 @@ function App() {
   const [reviews, setReviews] =
     useState<Review[]>(recipeReviews);
 
-  const [activityCount, setActivityCount] = useState(0);
+  const [activityCount, setActivityCount] =
+    useState(0);
 
   return (
     <>
@@ -56,7 +57,12 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Navigate to="/recipes" replace />}
+            element={
+              <Navigate
+                to="/recipes"
+                replace
+              />
+            }
           />
 
           <Route
@@ -68,10 +74,14 @@ function App() {
                 removeRecipe={removeRecipe}
                 updateRecipe={updateRecipe}
                 ingredientsData={ingredientsData}
-                setIngredientsData={setIngredientsData}
+                setIngredientsData={
+                  setIngredientsData
+                }
                 reviews={reviews}
                 activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
@@ -81,9 +91,13 @@ function App() {
             element={
               <IngredientsList
                 ingredientsData={ingredientsData}
-                setIngredientsData={setIngredientsData}
+                setIngredientsData={
+                  setIngredientsData
+                }
                 activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
@@ -98,14 +112,21 @@ function App() {
                   (recipe) => recipe.name
                 )}
                 activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
 
           <Route
             path="*"
-            element={<Navigate to="/recipes" replace />}
+            element={
+              <Navigate
+                to="/recipes"
+                replace
+              />
+            }
           />
         </Routes>
       </main>
