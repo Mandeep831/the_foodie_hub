@@ -13,9 +13,10 @@ import { useRecipes } from "./hooks/useRecipes";
 import { useReviews } from "./hooks/useReviews";
 
 import IngredientsList, {
-  recipeIngredients,
   type RecipeIngredients,
 } from "./components/ingredients/IngredientsList";
+
+import { recipeIngredients } from "./data/ingredients";
 
 import Reviews from "./components/Reviews/review";
 
