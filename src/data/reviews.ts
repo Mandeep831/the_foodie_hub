@@ -133,4 +133,18 @@ export const recipeReviews: Review[] = [
     rating: 4,
     comment: "Great combination of toppings.",
   },
+  {
+  id: 19,
+  recipeName: "Palak Paneer",
+  reviewer: "Rohan",
+  rating: 5,
+  comment: "Creamy, rich, and very tasty.",
+},
+{
+  id: 20,
+  recipeName: "Palak Paneer",
+  reviewer: "Mehak",
+  rating: 4,
+  comment: "The spinach gravy was really good.",
+},
 ];
