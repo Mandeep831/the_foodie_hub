@@ -1,39 +1,20 @@
 import { useState } from "react";
-
-interface Review {
-  id: number;
-  recipeName: string;
-  reviewer: string;
-  rating: number;
-  comment: string;
-}
+import type { Review } from "../../data/reviews";
 
 interface AddReviewFormProps {
-  reviews: Review[];
-
-  setReviews: React.Dispatch<
-    React.SetStateAction<Review[]>
-  >;
-
+  addReview: (review: Review) => void;
   recipeNames: string[];
 }
 
 function AddReviewForm({
-  reviews,
-  setReviews,
+  addReview,
   recipeNames,
 }: AddReviewFormProps) {
-  const [recipeName, setRecipeName] =
-    useState("");
-
-  const [reviewer, setReviewer] =
-    useState("");
-
-  const [rating, setRating] =
-    useState("");
-
-  const [comment, setComment] =
-    useState("");
+  const [recipeName, setRecipeName] = useState("");
+  const [reviewer, setReviewer] = useState("");
+  const [rating, setRating] = useState("");
+  const [comment, setComment] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (
     event: React.FormEvent<HTMLFormElement>
@@ -46,26 +27,33 @@ function AddReviewForm({
       rating === "" ||
       comment.trim() === ""
     ) {
+      setError("Please complete all review fields.");
       return;
     }
 
     const newReview: Review = {
       id: Date.now(),
-      recipeName: recipeName,
-      reviewer: reviewer.trim(),
+      recipeName,
+      reviewer,
       rating: Number(rating),
-      comment: comment.trim(),
+      comment,
     };
 
-    setReviews([
-      ...reviews,
-      newReview,
-    ]);
+    try {
+      addReview(newReview);
 
-    setRecipeName("");
-    setReviewer("");
-    setRating("");
-    setComment("");
+      setRecipeName("");
+      setReviewer("");
+      setRating("");
+      setComment("");
+      setError("");
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to add review."
+      );
+    }
   };
 
   return (
@@ -79,9 +67,7 @@ function AddReviewForm({
         }
         required
       >
-        <option value="">
-          Select Recipe
-        </option>
+        <option value="">Select Recipe</option>
 
         {recipeNames.map((name) => (
           <option key={name} value={name}>
@@ -107,10 +93,7 @@ function AddReviewForm({
         }
         required
       >
-        <option value="">
-          Select rating
-        </option>
-
+        <option value="">Select rating</option>
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -127,6 +110,8 @@ function AddReviewForm({
         }
         required
       />
+
+      {error && <p role="alert">{error}</p>}
 
       <button type="submit">
         Add Review

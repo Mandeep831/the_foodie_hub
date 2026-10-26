@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import "./App.css";
 
@@ -11,16 +10,14 @@ import {
 
 import RecipeList from "./components/recipeList/RecipeList";
 import { useRecipes } from "./hooks/useRecipes";
+import { useReviews } from "./hooks/useReviews";
 
 import IngredientsList, {
   recipeIngredients,
   type RecipeIngredients,
 } from "./components/ingredients/IngredientsList";
 
-import Reviews, {
-  recipeReviews,
-  type Review,
-} from "./components/Reviews/review";
+import Reviews from "./components/Reviews/review";
 
 function App() {
   const {
@@ -30,13 +27,18 @@ function App() {
     updateRecipe,
   } = useRecipes();
 
+  const {
+    reviews,
+    addReview,
+    removeReview,
+    updateReview,
+  } = useReviews();
+
   const [ingredientsData, setIngredientsData] =
     useState<RecipeIngredients[]>(recipeIngredients);
 
-  const [reviews, setReviews] =
-    useState<Review[]>(recipeReviews);
-
-  const [activityCount, setActivityCount] = useState(0);
+  const [activityCount, setActivityCount] =
+    useState(0);
 
   return (
     <>
@@ -46,7 +48,9 @@ function App() {
         <nav>
           <Link to="/recipes">Recipes</Link>
           {" | "}
-          <Link to="/ingredients">Ingredients</Link>
+          <Link to="/ingredients">
+            Ingredients
+          </Link>
           {" | "}
           <Link to="/reviews">Reviews</Link>
         </nav>
@@ -56,7 +60,12 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Navigate to="/recipes" replace />}
+            element={
+              <Navigate
+                to="/recipes"
+                replace
+              />
+            }
           />
 
           <Route
@@ -68,10 +77,16 @@ function App() {
                 removeRecipe={removeRecipe}
                 updateRecipe={updateRecipe}
                 ingredientsData={ingredientsData}
-                setIngredientsData={setIngredientsData}
+                setIngredientsData={
+                  setIngredientsData
+                }
                 reviews={reviews}
-                activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                activityCount={
+                  activityCount
+                }
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
@@ -80,10 +95,18 @@ function App() {
             path="/ingredients"
             element={
               <IngredientsList
-                ingredientsData={ingredientsData}
-                setIngredientsData={setIngredientsData}
-                activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                ingredientsData={
+                  ingredientsData
+                }
+                setIngredientsData={
+                  setIngredientsData
+                }
+                activityCount={
+                  activityCount
+                }
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
@@ -93,19 +116,30 @@ function App() {
             element={
               <Reviews
                 reviews={reviews}
-                setReviews={setReviews}
+                addReview={addReview}
+                removeReview={removeReview}
+                updateReview={updateReview}
                 recipeNames={recipes.map(
                   (recipe) => recipe.name
                 )}
-                activityCount={activityCount}
-                setActivityCount={setActivityCount}
+                activityCount={
+                  activityCount
+                }
+                setActivityCount={
+                  setActivityCount
+                }
               />
             }
           />
 
           <Route
             path="*"
-            element={<Navigate to="/recipes" replace />}
+            element={
+              <Navigate
+                to="/recipes"
+                replace
+              />
+            }
           />
         </Routes>
       </main>
