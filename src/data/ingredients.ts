@@ -274,22 +274,32 @@ export const recipeIngredients: RecipeIngredients[] = [
   },
 
   {
-    recipeName: "Pasta",
+    recipeName: "Palak Paneer",
     ingredients: [
       {
-        name: "Pasta",
+        name: "Paneer",
         description:
-          "Forms the main base of the dish.",
+          "Indian cottage cheese that provides the main protein and creamy texture.",
       },
       {
-        name: "Tomato Sauce",
+        name: "Spinach",
         description:
-          "Adds flavour and moisture to the pasta.",
+          "Forms the main base of the creamy green gravy.",
       },
       {
-        name: "Cheese",
+        name: "Onion",
         description:
-          "Adds a creamy and savoury flavour.",
+          "Adds flavour and helps create the base of the gravy.",
+      },
+      {
+        name: "Tomato",
+        description:
+          "Adds flavour, moisture, and a slight tanginess to the gravy.",
+      },
+      {
+        name: "Spices",
+        description:
+          "Add aroma, flavour, and seasoning to the dish.",
       },
     ],
   },
