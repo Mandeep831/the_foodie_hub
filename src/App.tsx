@@ -10,6 +10,7 @@ import {
 
 import RecipeList from "./components/recipeList/RecipeList";
 import { useRecipes } from "./hooks/useRecipes";
+import { useReviews } from "./hooks/useReviews";
 
 import IngredientsList, {
   type RecipeIngredients,
@@ -17,10 +18,7 @@ import IngredientsList, {
 
 import { recipeIngredients } from "./data/ingredients";
 
-import Reviews, {
-  recipeReviews,
-  type Review,
-} from "./components/Reviews/review";
+import Reviews from "./components/Reviews/review";
 
 function App() {
   const {
@@ -30,11 +28,15 @@ function App() {
     updateRecipe,
   } = useRecipes();
 
+  const {
+    reviews,
+    addReview,
+    removeReview,
+    updateReview,
+  } = useReviews();
+
   const [ingredientsData, setIngredientsData] =
     useState<RecipeIngredients[]>(recipeIngredients);
-
-  const [reviews, setReviews] =
-    useState<Review[]>(recipeReviews);
 
   const [activityCount, setActivityCount] =
     useState(0);
@@ -47,7 +49,9 @@ function App() {
         <nav>
           <Link to="/recipes">Recipes</Link>
           {" | "}
-          <Link to="/ingredients">Ingredients</Link>
+          <Link to="/ingredients">
+            Ingredients
+          </Link>
           {" | "}
           <Link to="/reviews">Reviews</Link>
         </nav>
@@ -78,7 +82,9 @@ function App() {
                   setIngredientsData
                 }
                 reviews={reviews}
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
@@ -90,11 +96,15 @@ function App() {
             path="/ingredients"
             element={
               <IngredientsList
-                ingredientsData={ingredientsData}
+                ingredientsData={
+                  ingredientsData
+                }
                 setIngredientsData={
                   setIngredientsData
                 }
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
@@ -107,11 +117,15 @@ function App() {
             element={
               <Reviews
                 reviews={reviews}
-                setReviews={setReviews}
+                addReview={addReview}
+                removeReview={removeReview}
+                updateReview={updateReview}
                 recipeNames={recipes.map(
                   (recipe) => recipe.name
                 )}
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
