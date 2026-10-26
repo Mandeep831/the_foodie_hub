@@ -7,6 +7,9 @@ import type {
   RecipeIngredients,
 } from "../data/ingredients";
 
+// Provides ingredient data and actions for components.
+// It uses the ingredient service and keeps the component state in sync.
+
 export function useIngredients() {
   const [ingredientsData, setIngredientsData] =
     useState<RecipeIngredients[]>(
