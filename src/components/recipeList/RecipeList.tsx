@@ -4,7 +4,7 @@ import AddRecipeForm from "./AddRecipeForm";
 
 import type { Recipe } from "../../data/recipes";
 import type { RecipeIngredients } from "../ingredients/IngredientsList";
-import type { Review } from "../Reviews/review";
+import type { Review } from "../../data/reviews";
 
 interface RecipeListProps {
   recipes: Recipe[];
