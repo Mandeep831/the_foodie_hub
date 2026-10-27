@@ -1,84 +1,65 @@
+
 import { useState } from "react";
-import type {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-} from "react";
+import type { FormEvent } from "react";
 
-interface Recipe {
-  id: number;
-  name: string;
-  description: string;
-}
-
-interface Ingredient {
-  name: string;
-  description: string;
-}
-
-interface RecipeIngredients {
-  recipeName: string;
-  ingredients: Ingredient[];
-}
+import type { Recipe } from "../../data/recipes";
+import type { RecipeIngredients } from "../ingredients/IngredientsList";
 
 interface AddRecipeFormProps {
-  recipes: Recipe[];
-  setRecipes: Dispatch<SetStateAction<Recipe[]>>;
-
+  addRecipe: (recipe: Recipe) => void;
   ingredientsData: RecipeIngredients[];
-  setIngredientsData: Dispatch<
-    SetStateAction<RecipeIngredients[]>
+  setIngredientsData: React.Dispatch<
+    React.SetStateAction<RecipeIngredients[]>
   >;
 }
 
 function AddRecipeForm({
-  recipes,
-  setRecipes,
+  addRecipe,
   ingredientsData,
   setIngredientsData,
 }: AddRecipeFormProps) {
   const [name, setName] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (
-    event: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (
-      !name.trim() ||
-      !description.trim()
-    ) {
+    const trimmedName = name.trim();
+    const trimmedDescription = description.trim();
+
+    if (!trimmedName || !trimmedDescription) {
+      setError("Please enter a recipe name and description.");
       return;
     }
 
-    const newRecipeName = name.trim();
-
     const newRecipe: Recipe = {
       id: Date.now(),
-      name: newRecipeName,
-      description: description.trim(),
+      name: trimmedName,
+      description: trimmedDescription,
     };
 
-    // Add the new recipe
-    setRecipes([
-      ...recipes,
-      newRecipe,
-    ]);
+    try {
+      addRecipe(newRecipe);
 
-    // Create an empty ingredient list
-    // for the new recipe
-    setIngredientsData([
-      ...ingredientsData,
-      {
-        recipeName: newRecipeName,
-        ingredients: [],
-      },
-    ]);
+      setIngredientsData([
+        ...ingredientsData,
+        {
+          recipeName: trimmedName,
+          ingredients: [],
+        },
+      ]);
 
-    setName("");
-    setDescription("");
+      setName("");
+      setDescription("");
+      setError("");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to add recipe."
+      );
+    }
   };
 
   return (
@@ -89,9 +70,7 @@ function AddRecipeForm({
         type="text"
         placeholder="Recipe name"
         value={name}
-        onChange={(event) =>
-          setName(event.target.value)
-        }
+        onChange={(event) => setName(event.target.value)}
       />
 
       <input
@@ -103,9 +82,9 @@ function AddRecipeForm({
         }
       />
 
-      <button type="submit">
-        Add Recipe
-      </button>
+      {error && <p role="alert">{error}</p>}
+
+      <button type="submit">Add Recipe</button>
     </form>
   );
 }

@@ -8,37 +8,36 @@ import {
   Link,
 } from "react-router-dom";
 
-import RecipeList, {
-  initialRecipes,
-  type Recipe,
-} from "./components/recipeList/RecipeList";
+import RecipeList from "./components/recipeList/RecipeList";
+import { useRecipes } from "./hooks/useRecipes";
+import { useReviews } from "./hooks/useReviews";
 
 import IngredientsList, {
-  recipeIngredients,
   type RecipeIngredients,
 } from "./components/ingredients/IngredientsList";
 
-import Reviews, {
-  recipeReviews,
-  type Review,
-} from "./components/Reviews/review";
+import { recipeIngredients } from "./data/ingredients";
+
+import Reviews from "./components/Reviews/review";
 
 function App() {
-  // Shared Recipes state
-  const [recipes, setRecipes] =
-    useState<Recipe[]>(initialRecipes);
+  const {
+    recipes,
+    addRecipe,
+    removeRecipe,
+    updateRecipe,
+  } = useRecipes();
 
-  // Shared Ingredients state
+  const {
+    reviews,
+    addReview,
+    removeReview,
+    updateReview,
+  } = useReviews();
+
   const [ingredientsData, setIngredientsData] =
-    useState<RecipeIngredients[]>(
-      recipeIngredients
-    );
+    useState<RecipeIngredients[]>(recipeIngredients);
 
-  // Shared Reviews state
-  const [reviews, setReviews] =
-    useState<Review[]>(recipeReviews);
-
-  // Shared Activity state
   const [activityCount, setActivityCount] =
     useState(0);
 
@@ -75,13 +74,17 @@ function App() {
             element={
               <RecipeList
                 recipes={recipes}
-                setRecipes={setRecipes}
+                addRecipe={addRecipe}
+                removeRecipe={removeRecipe}
+                updateRecipe={updateRecipe}
                 ingredientsData={ingredientsData}
                 setIngredientsData={
                   setIngredientsData
                 }
                 reviews={reviews}
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
@@ -99,7 +102,9 @@ function App() {
                 setIngredientsData={
                   setIngredientsData
                 }
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
@@ -112,14 +117,28 @@ function App() {
             element={
               <Reviews
                 reviews={reviews}
-                setReviews={setReviews}
+                addReview={addReview}
+                removeReview={removeReview}
+                updateReview={updateReview}
                 recipeNames={recipes.map(
                   (recipe) => recipe.name
                 )}
-                activityCount={activityCount}
+                activityCount={
+                  activityCount
+                }
                 setActivityCount={
                   setActivityCount
                 }
+              />
+            }
+          />
+
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to="/recipes"
+                replace
               />
             }
           />
@@ -127,12 +146,7 @@ function App() {
       </main>
 
       <footer>
-        <p>FoodieHub Team</p>
-
-        <p>
-          Mandeep Kaur | Prachi Dhamija |
-          Gagandeep Singh
-        </p>
+        <p>FoodieHub</p>
       </footer>
     </>
   );

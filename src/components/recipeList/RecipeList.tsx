@@ -1,104 +1,25 @@
+
 import { useState } from "react";
 import AddRecipeForm from "./AddRecipeForm";
 
-export interface Recipe {
-  id: number;
-  name: string;
-  description: string;
-}
-
-export const initialRecipes: Recipe[] = [
-  {
-    id: 1,
-    name: "Paneer Tikka",
-    description:
-      "Grilled Indian cottage cheese with spices and vegetables.",
-  },
-  {
-    id: 2,
-    name: "Chole Bhature",
-    description:
-      "Spicy chickpeas served with fried bread.",
-  },
-  {
-    id: 3,
-    name: "Margherita Pizza",
-    description:
-      "Pizza topped with tomato sauce, mozzarella, and basil.",
-  },
-  {
-    id: 4,
-    name: "Vegetable Fried Rice",
-    description:
-      "Rice stir-fried with fresh vegetables and savoury seasonings.",
-  },
-  {
-    id: 5,
-    name: "Aloo Gobi",
-    description:
-      "A traditional Indian dish made with potatoes, cauliflower, and aromatic spices.",
-  },
-  {
-    id: 6,
-    name: "Chicken Noodles",
-    description:
-      "Stir-fried noodles cooked with chicken and fresh vegetables.",
-  },
-  {
-    id: 7,
-    name: "Vegetable Biryani",
-    description:
-      "Fragrant basmati rice cooked with vegetables and aromatic spices.",
-  },
-  {
-    id: 8,
-    name: "Masala Dosa",
-    description:
-      "Crispy fermented rice crepe filled with spiced potatoes.",
-  },
-  {
-    id: 9,
-    name: "Tacos",
-    description:
-      "Soft or crispy tortillas filled with vegetables, beans, and toppings.",
-  },
-];
-
-interface Ingredient {
-  name: string;
-  description: string;
-}
-
-interface RecipeIngredients {
-  recipeName: string;
-  ingredients: Ingredient[];
-}
-
-interface Review {
-  id: number;
-  recipeName: string;
-  reviewer: string;
-  rating: number;
-  comment: string;
-}
+import type { Recipe } from "../../data/recipes";
+import type { RecipeIngredients } from "../ingredients/IngredientsList";
+import type { Review } from "../Reviews/review";
 
 interface RecipeListProps {
   recipes: Recipe[];
-
-  setRecipes: React.Dispatch<
-    React.SetStateAction<Recipe[]>
-  >;
-
+  addRecipe: (recipe: Recipe) => void;
+  removeRecipe: (id: number) => void;
+  updateRecipe: (
+    id: number,
+    updatedRecipe: Recipe
+  ) => void;
   ingredientsData: RecipeIngredients[];
-
   setIngredientsData: React.Dispatch<
     React.SetStateAction<RecipeIngredients[]>
   >;
-
   reviews: Review[];
-
   activityCount: number;
-
   setActivityCount: React.Dispatch<
     React.SetStateAction<number>
   >;
@@ -106,7 +27,9 @@ interface RecipeListProps {
 
 function RecipeList({
   recipes,
-  setRecipes,
+  addRecipe,
+  removeRecipe,
+  updateRecipe,
   ingredientsData,
   setIngredientsData,
   reviews,
@@ -125,15 +48,14 @@ function RecipeList({
       <button
         type="button"
         onClick={() =>
-          setActivityCount(activityCount + 1)
+          setActivityCount((count) => count + 1)
         }
       >
         Increase Activity
       </button>
 
       <AddRecipeForm
-        recipes={recipes}
-        setRecipes={setRecipes}
+        addRecipe={addRecipe}
         ingredientsData={ingredientsData}
         setIngredientsData={setIngredientsData}
       />
@@ -142,17 +64,14 @@ function RecipeList({
         {recipes.map((recipe) => {
           const selectedIngredients =
             ingredientsData.find(
-              (item) =>
-                item.recipeName === recipe.name
+              (item) => item.recipeName === recipe.name
             );
 
           const selectedReviews = reviews.filter(
-            (review) =>
-              review.recipeName === recipe.name
+            (review) => review.recipeName === recipe.name
           );
 
-          const isSelected =
-            selectedRecipe === recipe.id;
+          const isSelected = selectedRecipe === recipe.id;
 
           return (
             <article
@@ -165,16 +84,13 @@ function RecipeList({
 
               <div className="recipe-content">
                 <h3>{recipe.name}</h3>
-
                 <p>{recipe.description}</p>
 
                 <button
                   type="button"
                   onClick={() =>
                     setSelectedRecipe(
-                      isSelected
-                        ? null
-                        : recipe.id
+                      isSelected ? null : recipe.id
                     )
                   }
                 >
@@ -185,16 +101,32 @@ function RecipeList({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setRecipes(
-                      recipes.filter(
+                  onClick={() => {
+                    removeRecipe(recipe.id);
+
+                    setIngredientsData((current) =>
+                      current.filter(
                         (item) =>
-                          item.id !== recipe.id
+                          item.recipeName !== recipe.name
                       )
-                    )
-                  }
+                    );
+
+                    setSelectedRecipe(null);
+                  }}
                 >
                   Remove Recipe
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateRecipe(recipe.id, {
+                      ...recipe,
+                      description: `${recipe.description}`,
+                    })
+                  }
+                >
+                  Save Recipe
                 </button>
 
                 {isSelected && (
@@ -202,67 +134,42 @@ function RecipeList({
                     <h4>Ingredients</h4>
 
                     {selectedIngredients &&
-                    selectedIngredients.ingredients
-                      .length > 0 ? (
+                    selectedIngredients.ingredients.length > 0 ? (
                       <ul>
                         {selectedIngredients.ingredients.map(
                           (ingredient) => (
-                            <li
-                              key={ingredient.name}
-                            >
-                              <strong>
-                                {ingredient.name}
-                              </strong>
-
-                              <p>
-                                {
-                                  ingredient.description
-                                }
-                              </p>
+                            <li key={ingredient.name}>
+                              <strong>{ingredient.name}</strong>
+                              <p>{ingredient.description}</p>
                             </li>
                           )
                         )}
                       </ul>
                     ) : (
-                      <p>
-                        No ingredients available
-                        yet.
-                      </p>
+                      <p>No ingredients available yet.</p>
                     )}
 
                     <h4>Reviews</h4>
 
-                    <div className="recipe-reviews">
-                      {selectedReviews.length >
-                      0 ? (
-                        selectedReviews.map(
-                          (review) => (
-                            <div
-                              className="recipe-review"
-                              key={review.id}
-                            >
-                              <p>
-                                <strong>
-                                  {
-                                    review.reviewer
-                                  }
-                                </strong>{" "}
-                                —{" "}
-                                {review.rating}/5
-                              </p>
-
-                              <p>
-                                {review.comment}
-                              </p>
-                            </div>
-                          )
-                        )
-                      ) : (
-                        <p>
-                          No reviews available yet.
-                        </p>
-                      )}
-                    </div>
+                    {selectedReviews.length > 0 ? (
+                      <div className="recipe-reviews">
+                        {selectedReviews.map((review) => (
+                          <div
+                            className="recipe-review"
+                            key={review.id}
+                          >
+                            <p>
+                              <strong>{review.reviewer}</strong>
+                              {" — "}
+                              {review.rating}/5
+                            </p>
+                            <p>{review.comment}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>No reviews available yet.</p>
+                    )}
                   </div>
                 )}
               </div>
