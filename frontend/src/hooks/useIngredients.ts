@@ -1,4 +1,6 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+
 import {
   ingredientService,
 } from "../services/ingredientService";
@@ -7,75 +9,100 @@ import type {
   RecipeIngredients,
 } from "../data/ingredients";
 
-// Provides ingredient data and actions for components.
-// It uses the ingredient service and keeps the component state in sync.
-
 export function useIngredients() {
   const [ingredientsData, setIngredientsData] =
-    useState<RecipeIngredients[]>(
-      () => ingredientService.getAllIngredients()
-    );
+    useState<RecipeIngredients[]>([]);
 
-  const addRecipeIngredients = (
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  const refreshIngredients = async () => {
+    try {
+      setError("");
+
+      const ingredients =
+        await ingredientService.getAllIngredients();
+
+      setIngredientsData(ingredients);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load ingredients."
+      );
+
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const loadIngredients = async () => {
+      try {
+        await refreshIngredients();
+      } catch (error) {
+        console.error("Failed to load ingredients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadIngredients();
+  }, []);
+
+  const addRecipeIngredients = async (
     recipe: RecipeIngredients
   ) => {
     const created =
-      ingredientService.addIngredients(recipe);
+      await ingredientService.addIngredients(recipe);
 
-    setIngredientsData(
-      ingredientService.getAllIngredients()
-    );
+    await refreshIngredients();
 
     return created;
   };
 
-  const updateRecipeIngredients = (
+  const updateRecipeIngredients = async (
     recipeName: string,
     recipe: RecipeIngredients
   ) => {
     const updated =
-      ingredientService.updateIngredients(
+      await ingredientService.updateIngredients(
         recipeName,
         recipe
       );
 
-    setIngredientsData(
-      ingredientService.getAllIngredients()
-    );
+    await refreshIngredients();
 
     return updated;
   };
 
-  const removeRecipeIngredients = (
+  const removeRecipeIngredients = async (
     recipeName: string
   ) => {
     const removed =
-      ingredientService.removeIngredients(
-        recipeName
-      );
+      await ingredientService.removeIngredients(recipeName);
 
     if (removed) {
-      setIngredientsData(
-        ingredientService.getAllIngredients()
-      );
+      await refreshIngredients();
     }
 
     return removed;
   };
 
-  const getRecipeIngredients = (
+  const getRecipeIngredients = async (
     recipeName: string
   ) => {
-    return ingredientService.getIngredientsByRecipe(
-      recipeName
-    );
+    return ingredientService.getIngredientsByRecipe(recipeName);
   };
 
   return {
     ingredientsData,
+    loading,
+    error,
     addRecipeIngredients,
     updateRecipeIngredients,
     removeRecipeIngredients,
     getRecipeIngredients,
+    refreshIngredients,
   };
 }

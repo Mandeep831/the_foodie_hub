@@ -1,48 +1,37 @@
-import {
-  ingredientRepository,
-} from "../repositories/ingredientRepository";
 
-import type {
-  RecipeIngredients,
-} from "../data/ingredients";
+import { ingredientRepository } from "../repositories/ingredientRepository";
+
+import type { RecipeIngredients } from "../data/ingredients";
 
 class IngredientService {
-  getAllIngredients(): RecipeIngredients[] {
+  async getAllIngredients(): Promise<RecipeIngredients[]> {
     return ingredientRepository.getAll();
   }
 
-  getIngredientsByRecipe(
+  async getIngredientsByRecipe(
     recipeName: string
-  ): RecipeIngredients | undefined {
-    return ingredientRepository.getByRecipeName(
-      recipeName
-    );
+  ): Promise<RecipeIngredients | undefined> {
+    return ingredientRepository.getByRecipeName(recipeName);
   }
 
-  addIngredients(
+  async addIngredients(
     recipe: RecipeIngredients
-  ): RecipeIngredients {
+  ): Promise<RecipeIngredients> {
     return ingredientRepository.create(recipe);
   }
 
-  updateIngredients(
+  async updateIngredients(
     recipeName: string,
     recipe: RecipeIngredients
-  ): RecipeIngredients | undefined {
-    return ingredientRepository.update(
-      recipeName,
-      recipe
-    );
+  ): Promise<RecipeIngredients> {
+    return ingredientRepository.update(recipeName, recipe);
   }
 
-  removeIngredients(
+  async removeIngredients(
     recipeName: string
-  ): boolean {
-    return ingredientRepository.delete(
-      recipeName
-    );
+  ): Promise<boolean> {
+    return ingredientRepository.delete(recipeName);
   }
 }
 
-export const ingredientService =
-  new IngredientService();
+export const ingredientService = new IngredientService();

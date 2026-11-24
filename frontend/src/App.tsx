@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import "./App.css";
 
 import {
@@ -16,7 +17,7 @@ import IngredientsList, {
   type RecipeIngredients,
 } from "./components/ingredients/IngredientsList";
 
-import { recipeIngredients } from "./data/ingredients";
+import { ingredientService } from "./services/ingredientService";
 
 import Reviews from "./components/Reviews/review";
 
@@ -36,10 +37,28 @@ function App() {
   } = useReviews();
 
   const [ingredientsData, setIngredientsData] =
-    useState<RecipeIngredients[]>(recipeIngredients);
+    useState<RecipeIngredients[]>([]);
 
   const [activityCount, setActivityCount] =
     useState(0);
+
+  useEffect(() => {
+    const loadIngredients = async () => {
+      try {
+        const ingredients =
+          await ingredientService.getAllIngredients();
+
+        setIngredientsData(ingredients);
+      } catch (error) {
+        console.error(
+          "Failed to load ingredients:",
+          error
+        );
+      }
+    };
+
+    loadIngredients();
+  }, []);
 
   return (
     <>
@@ -82,12 +101,8 @@ function App() {
                   setIngredientsData
                 }
                 reviews={reviews}
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />
@@ -96,18 +111,10 @@ function App() {
             path="/ingredients"
             element={
               <IngredientsList
-                ingredientsData={
-                  ingredientsData
-                }
-                setIngredientsData={
-                  setIngredientsData
-                }
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                ingredientsData={ingredientsData}
+                setIngredientsData={setIngredientsData}
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />
@@ -123,12 +130,8 @@ function App() {
                 recipeNames={recipes.map(
                   (recipe) => recipe.name
                 )}
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />
