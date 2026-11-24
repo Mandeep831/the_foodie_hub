@@ -4,16 +4,16 @@ import AddRecipeForm from "./AddRecipeForm";
 
 import type { Recipe } from "../../data/recipes";
 import type { RecipeIngredients } from "../ingredients/IngredientsList";
-import type { Review } from "../Reviews/review";
+import type { Review } from "../../data/reviews";
 
 interface RecipeListProps {
   recipes: Recipe[];
-  addRecipe: (recipe: Recipe) => void;
-  removeRecipe: (id: number) => void;
+  addRecipe: (recipe: Recipe) => Promise<void>;
+  removeRecipe: (id: number) => Promise<void>;
   updateRecipe: (
     id: number,
     updatedRecipe: Recipe
-  ) => void;
+  ) => Promise<void>;
   ingredientsData: RecipeIngredients[];
   setIngredientsData: React.Dispatch<
     React.SetStateAction<RecipeIngredients[]>

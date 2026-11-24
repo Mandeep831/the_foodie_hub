@@ -22,3 +22,32 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.*
+
+# SQLite database
+*.db
+*.db-journal
+
+# Generated Prisma files
+backend/src/generated/prisma/
+
+# AI editor files
+.agents/
+.claude/
+.windsurf/
+
+# Generated Prisma and TypeScript files
+backend/prisma/*.js
+backend/prisma/*.js.map
+backend/prisma/*.d.ts
+backend/prisma/*.d.ts.map
+
+backend/prisma7.config.js
+backend/prisma7.config.js.map
+backend/prisma7.config.d.ts
+backend/prisma7.config.d.ts.map
+backend/package-lock.json
+backend/skills-lock.json

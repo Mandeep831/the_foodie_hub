@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import type { FormEvent } from "react";
 
@@ -6,7 +5,7 @@ import type { Recipe } from "../../data/recipes";
 import type { RecipeIngredients } from "../ingredients/IngredientsList";
 
 interface AddRecipeFormProps {
-  addRecipe: (recipe: Recipe) => void;
+  addRecipe: (recipe: Recipe) => Promise<void>;
   ingredientsData: RecipeIngredients[];
   setIngredientsData: React.Dispatch<
     React.SetStateAction<RecipeIngredients[]>
@@ -22,7 +21,7 @@ function AddRecipeForm({
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedName = name.trim();
@@ -40,7 +39,7 @@ function AddRecipeForm({
     };
 
     try {
-      addRecipe(newRecipe);
+       await addRecipe(newRecipe);
 
       setIngredientsData([
         ...ingredientsData,

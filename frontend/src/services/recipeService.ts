@@ -1,41 +1,34 @@
-
 import { recipeRepository } from "../repositories/recipeRepository";
 import type { Recipe } from "../data/recipes";
 
 export const recipeService = {
-  getAllRecipes(): Recipe[] {
+  async getAllRecipes(): Promise<Recipe[]> {
     return recipeRepository.getAll();
   },
 
-  getRecipeById(id: number): Recipe | undefined {
+  async getRecipeById(id: number): Promise<Recipe | undefined> {
     return recipeRepository.getById(id);
   },
 
-  addRecipe(recipe: Recipe): Recipe {
-    const trimmedName = recipe.name.trim();
-    const trimmedDescription = recipe.description.trim();
+  async addRecipe(recipe: Recipe): Promise<Recipe> {
+    const name = recipe.name.trim();
+    const description = recipe.description.trim();
 
-    if (!trimmedName) {
+    if (!name) {
       throw new Error("Recipe name is required.");
     }
 
-    if (!trimmedDescription) {
+    if (!description) {
       throw new Error("Recipe description is required.");
     }
 
-    const newRecipe: Recipe = {
-      ...recipe,
-      name: trimmedName,
-      description: trimmedDescription,
-    };
-
-    return recipeRepository.create(newRecipe);
+    return recipeRepository.create({ name, description });
   },
 
-  updateRecipe(
+  async updateRecipe(
     id: number,
     recipe: Recipe
-  ): Recipe | undefined {
+  ): Promise<Recipe> {
     if (!recipe.name.trim()) {
       throw new Error("Recipe name is required.");
     }
@@ -51,7 +44,7 @@ export const recipeService = {
     });
   },
 
-  deleteRecipe(id: number): boolean {
+  async deleteRecipe(id: number): Promise<boolean> {
     return recipeRepository.delete(id);
   },
 };
