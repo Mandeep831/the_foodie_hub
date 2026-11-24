@@ -1,5 +1,6 @@
 
 import recipeRoutes from "./routes/recipeRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js"; // Reviews
 import ingredientRoutes from "./routes/ingredientRoutes.js";
 import { prisma } from "./prisma.js";
 import express from "express";
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/reviews", reviewRoutes); // Reviews
 app.use("/api/ingredients", ingredientRoutes);
 
 app.get("/", (_req, res) => {

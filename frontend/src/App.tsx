@@ -34,6 +34,8 @@ function App() {
     addReview,
     removeReview,
     updateReview,
+    loading: reviewsLoading,
+    error: reviewsError,
   } = useReviews();
 
   const [ingredientsData, setIngredientsData] =
@@ -97,9 +99,7 @@ function App() {
                 removeRecipe={removeRecipe}
                 updateRecipe={updateRecipe}
                 ingredientsData={ingredientsData}
-                setIngredientsData={
-                  setIngredientsData
-                }
+                setIngredientsData={setIngredientsData}
                 reviews={reviews}
                 activityCount={activityCount}
                 setActivityCount={setActivityCount}
@@ -127,9 +127,9 @@ function App() {
                 addReview={addReview}
                 removeReview={removeReview}
                 updateReview={updateReview}
-                recipeNames={recipes.map(
-                  (recipe) => recipe.name
-                )}
+                recipes={recipes}
+                loading={reviewsLoading}
+                error={reviewsError}
                 activityCount={activityCount}
                 setActivityCount={setActivityCount}
               />

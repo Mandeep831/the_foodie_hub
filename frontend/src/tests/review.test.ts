@@ -1,197 +1,260 @@
+
 import {
   beforeEach,
+  afterEach,
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
 import { reviewRepository } from "../repositories/reviewRepository";
 import { reviewService } from "../services/reviewService";
-import { recipeReviews } from "../data/reviews";
+
+const fetchMock = vi.fn();
+
+const apiReview = {
+  id: 1,
+  recipeId: 1,
+  reviewer: "Aman",
+  rating: 5,
+  comment: "Very tasty!",
+  recipe: {
+    id: 1,
+    name: "Paneer Tikka",
+  },
+};
+
+const reviewInput = {
+  recipeId: 1,
+  reviewer: "Aman",
+  rating: 5,
+  comment: "Very tasty!",
+};
+
+const expectedReview = {
+  id: 1,
+  recipeName: "Paneer Tikka",
+  reviewer: "Aman",
+  rating: 5,
+  comment: "Very tasty!",
+};
 
 describe("Review Repository and Service", () => {
   beforeEach(() => {
-    // Arrange: reset repository before each test.
-    reviewRepository.getAll().forEach((review) => {
-      reviewRepository.delete(review.id);
-    });
-
-    recipeReviews.forEach((review) => {
-      reviewRepository.create({ ...review });
-    });
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
   });
 
-  it("gets all reviews", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("gets all reviews", async () => {
     // Arrange
-    const expectedCount = recipeReviews.length;
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify([apiReview]))
+    );
 
     // Act
-    const reviews = reviewRepository.getAll();
+    const reviews = await reviewRepository.getAll();
 
     // Assert
-    expect(reviews).toHaveLength(expectedCount);
+    expect(reviews).toEqual([expectedReview]);
   });
 
-  it("gets a review by ID", () => {
+  it("gets a review by ID", async () => {
     // Arrange
-    const reviewId = 1;
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(apiReview))
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify([apiReview]))
+      );
 
     // Act
-    const review =
-      reviewRepository.getById(reviewId);
+    const review = await reviewRepository.getById(1);
 
     // Assert
-    expect(review).toBeDefined();
-    expect(review?.reviewer).toBe("Aman");
+    expect(review).toEqual(expectedReview);
   });
 
-  it("creates a review", () => {
+  it("creates a review", async () => {
     // Arrange
-    const newReview = {
-      id: 100,
-      recipeName: "Tacos",
-      reviewer: "Jane",
-      rating: 5,
-      comment: "Very good",
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify(apiReview), {
+        status: 201,
+      })
+    );
+
+    // Act
+    const created = await reviewRepository.create(
+      reviewInput,
+      "Paneer Tikka"
+    );
+
+    // Assert
+    expect(created).toEqual(expectedReview);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/reviews"),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify(reviewInput),
+      })
+    );
+  });
+
+  it("updates a review", async () => {
+    // Arrange
+    const updatedInput = {
+      ...reviewInput,
+      rating: 4,
     };
 
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ ...apiReview, rating: 4 })
+      )
+    );
+
     // Act
-    const created =
-      reviewRepository.create(newReview);
+    const updated = await reviewRepository.update(
+      1,
+      updatedInput,
+      "Paneer Tikka"
+    );
 
     // Assert
-    expect(created).toEqual(newReview);
-    expect(
-      reviewRepository.getById(100)
-    ).toEqual(newReview);
+    expect(updated?.rating).toBe(4);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/reviews/1"),
+      expect.objectContaining({
+        method: "PUT",
+      })
+    );
   });
 
-  it("updates a review", () => {
+  it("deletes a review", async () => {
     // Arrange
-    const updatedReview = {
-      id: 1,
-      recipeName: "Paneer Tikka",
-      reviewer: "Aman",
-      rating: 4,
+    fetchMock.mockResolvedValueOnce(
+      new Response(null, { status: 204 })
+    );
+
+    // Act
+    const deleted = await reviewRepository.delete(1);
+
+    // Assert
+    expect(deleted).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/reviews/1"),
+      expect.objectContaining({
+        method: "DELETE",
+      })
+    );
+  });
+
+  it("gets all reviews through the service", async () => {
+    // Arrange
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify([apiReview]))
+    );
+
+    // Act
+    const reviews = await reviewService.getAllReviews();
+
+    // Assert
+    expect(reviews).toEqual([expectedReview]);
+  });
+
+  it("adds a review with trimmed values", async () => {
+    // Arrange
+    const input = {
+      ...reviewInput,
+      reviewer: "  Aman  ",
+      comment: "  Very tasty!  ",
+    };
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify(apiReview), {
+        status: 201,
+      })
+    );
+
+    // Act
+    const created = await reviewService.addReview(
+      input,
+      "Paneer Tikka"
+    );
+
+    // Assert
+    expect(created.reviewer).toBe("Aman");
+    expect(created.comment).toBe("Very tasty!");
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify(reviewInput),
+      })
+    );
+  });
+
+  it("rejects a review with invalid rating", async () => {
+    // Arrange
+    const invalidReview = {
+      ...reviewInput,
+      rating: 6,
+    };
+
+    // Act and Assert
+    await expect(
+      reviewService.addReview(
+        invalidReview,
+        "Paneer Tikka"
+      )
+    ).rejects.toThrow(
+      "Rating must be between 1 and 5."
+    );
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("updates a review through the service", async () => {
+    // Arrange
+    const updatedInput = {
+      ...reviewInput,
       comment: "Updated review",
     };
 
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          ...apiReview,
+          comment: "Updated review",
+        })
+      )
+    );
+
     // Act
-    const updated =
-      reviewRepository.update(
-        1,
-        updatedReview
-      );
+    const updated = await reviewService.updateReview(
+      1,
+      updatedInput,
+      "Paneer Tikka"
+    );
 
     // Assert
-    expect(updated).toEqual(updatedReview);
-    expect(
-      reviewRepository.getById(1)
-    ).toEqual(updatedReview);
+    expect(updated?.comment).toBe("Updated review");
   });
 
-  it("deletes a review", () => {
+  it("deletes a review through the service", async () => {
     // Arrange
-    const reviewId = 1;
+    fetchMock.mockResolvedValueOnce(
+      new Response(null, { status: 204 })
+    );
 
     // Act
-    const deleted =
-      reviewRepository.delete(reviewId);
+    const deleted = await reviewService.deleteReview(1);
 
     // Assert
     expect(deleted).toBe(true);
-    expect(
-      reviewRepository.getById(reviewId)
-    ).toBeUndefined();
-  });
-
-  it("gets all reviews through the service", () => {
-    // Arrange
-    const expectedCount = recipeReviews.length;
-
-    // Act
-    const reviews =
-      reviewService.getAllReviews();
-
-    // Assert
-    expect(reviews).toHaveLength(expectedCount);
-  });
-
-  it("adds a review with trimmed values", () => {
-    // Arrange
-    const review = {
-      id: 200,
-      recipeName: "Tacos",
-      reviewer: "  Jane  ",
-      rating: 5,
-      comment: "  Great tacos  ",
-    };
-
-    // Act
-    const created =
-      reviewService.addReview(review);
-
-    // Assert
-    expect(created.reviewer).toBe("Jane");
-    expect(created.comment).toBe(
-      "Great tacos"
-    );
-  });
-
-  it("rejects a review with invalid rating", () => {
-    // Arrange
-    const review = {
-      id: 201,
-      recipeName: "Tacos",
-      reviewer: "Jane",
-      rating: 6,
-      comment: "Good",
-    };
-
-    // Act + Assert
-    expect(() =>
-      reviewService.addReview(review)
-    ).toThrow(
-      "Rating must be between 1 and 5."
-    );
-  });
-
-  it("updates a review through the service", () => {
-    // Arrange
-    const updatedReview = {
-      id: 2,
-      recipeName: "Paneer Tikka",
-      reviewer: "Simran",
-      rating: 5,
-      comment: "Updated and improved",
-    };
-
-    // Act
-    const updated =
-      reviewService.updateReview(
-        2,
-        updatedReview
-      );
-
-    // Assert
-    expect(updated).toEqual(updatedReview);
-    expect(
-      reviewRepository.getById(2)
-    ).toEqual(updatedReview);
-  });
-
-  it("deletes a review through the service", () => {
-    // Arrange
-    const reviewId = 3;
-
-    // Act
-    const deleted =
-      reviewService.deleteReview(reviewId);
-
-    // Assert
-    expect(deleted).toBe(true);
-    expect(
-      reviewRepository.getById(reviewId)
-    ).toBeUndefined();
   });
 });
