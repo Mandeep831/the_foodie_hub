@@ -14,6 +14,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://the-foodie-12oef2cac-mandeep19.vercel.app",
+      "https://the-foodie-4gsl0oedb-mandeep19.vercel.app",
     ],
   })
 );
