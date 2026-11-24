@@ -10,9 +10,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(
-    cors({
-        origin: "http://localhost:5173"
-    }));
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://the-foodie-12oef2cac-mandeep19.vercel.app",
+    ],
+  })
+);
+
 app.use(express.json());
 
 app.use("/api/recipes", recipeRoutes);
