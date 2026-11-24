@@ -32,5 +32,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   prisma.$connect()
     .then(() => console.log("Database connected successfully!"))
-    .catch((error) => console.error("Database connection failed:", error));
+    .catch((error: unknown) =>
+      console.error("Database connection failed:", error)
+    );
 });
