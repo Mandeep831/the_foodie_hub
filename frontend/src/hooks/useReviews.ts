@@ -1,45 +1,72 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { reviewService } from "../services/reviewService";
 import type { Review } from "../data/reviews";
+import type { ReviewInput } from "../repositories/reviewRepository";
 
 export function useReviews() {
-  const [reviews, setReviews] = useState<Review[]>(
-    () => reviewService.getAllReviews()
-  );
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  function addReview(review: Review): void {
-    const createdReview = reviewService.addReview(review);
+  useEffect(() => {
+    async function loadReviews() {
+      try {
+        const data = await reviewService.getAllReviews();
+        setReviews(data);
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load reviews."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    setReviews((currentReviews: Review[]) => [
+    void loadReviews();
+  }, []);
+
+  async function addReview(
+    review: ReviewInput,
+    recipeName: string
+  ): Promise<void> {
+    const createdReview = await reviewService.addReview(
+      review,
+      recipeName
+    );
+
+    setReviews((currentReviews) => [
       ...currentReviews,
       createdReview,
     ]);
   }
 
-  function removeReview(id: number): void {
-    const deleted = reviewService.deleteReview(id);
+  async function removeReview(id: number): Promise<void> {
+    const deleted = await reviewService.deleteReview(id);
 
     if (deleted) {
-      setReviews((currentReviews: Review[]) =>
-        currentReviews.filter(
-          (review: Review) => review.id !== id
-        )
+      setReviews((currentReviews) =>
+        currentReviews.filter((review) => review.id !== id)
       );
     }
   }
 
-  function updateReview(
+  async function updateReview(
     id: number,
-    updatedReview: Review
-  ): void {
-    const updated = reviewService.updateReview(
+    updatedReview: ReviewInput,
+    recipeName: string
+  ): Promise<void> {
+    const updated = await reviewService.updateReview(
       id,
-      updatedReview
+      updatedReview,
+      recipeName
     );
 
     if (updated) {
-      setReviews((currentReviews: Review[]) =>
-        currentReviews.map((review: Review) =>
+      setReviews((currentReviews) =>
+        currentReviews.map((review) =>
           review.id === id ? updated : review
         )
       );
@@ -48,6 +75,8 @@ export function useReviews() {
 
   return {
     reviews,
+    loading,
+    error,
     addReview,
     removeReview,
     updateReview,

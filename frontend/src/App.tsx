@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import "./App.css";
 
@@ -33,6 +34,8 @@ function App() {
     addReview,
     removeReview,
     updateReview,
+    loading: reviewsLoading,
+    error: reviewsError,
   } = useReviews();
 
   const [ingredientsData, setIngredientsData] =
@@ -78,16 +81,10 @@ function App() {
                 removeRecipe={removeRecipe}
                 updateRecipe={updateRecipe}
                 ingredientsData={ingredientsData}
-                setIngredientsData={
-                  setIngredientsData
-                }
+                setIngredientsData={setIngredientsData}
                 reviews={reviews}
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />
@@ -96,18 +93,10 @@ function App() {
             path="/ingredients"
             element={
               <IngredientsList
-                ingredientsData={
-                  ingredientsData
-                }
-                setIngredientsData={
-                  setIngredientsData
-                }
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                ingredientsData={ingredientsData}
+                setIngredientsData={setIngredientsData}
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />
@@ -120,15 +109,11 @@ function App() {
                 addReview={addReview}
                 removeReview={removeReview}
                 updateReview={updateReview}
-                recipeNames={recipes.map(
-                  (recipe) => recipe.name
-                )}
-                activityCount={
-                  activityCount
-                }
-                setActivityCount={
-                  setActivityCount
-                }
+                recipes={recipes}
+                loading={reviewsLoading}
+                error={reviewsError}
+                activityCount={activityCount}
+                setActivityCount={setActivityCount}
               />
             }
           />

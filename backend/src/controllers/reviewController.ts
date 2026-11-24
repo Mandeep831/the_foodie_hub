@@ -10,7 +10,11 @@ export const getAllReviews = async (
     const reviews = await reviewService.getAllReviews();
     res.status(200).json(reviews);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch reviews" });
+    console.error("Review fetch error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch reviews",
+    });
   }
 };
 
@@ -23,13 +27,19 @@ export const getReviewById = async (
     const review = await reviewService.getReviewById(id);
 
     if (!review) {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({
+        message: "Review not found",
+      });
       return;
     }
 
     res.status(200).json(review);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch review" });
+    console.error("Review fetch by ID error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch review",
+    });
   }
 };
 
@@ -49,7 +59,11 @@ export const createReview = async (
 
     res.status(201).json(review);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create review" });
+    console.error("Review creation error:", error);
+
+    res.status(500).json({
+      message: "Failed to create review",
+    });
   }
 };
 
@@ -64,7 +78,9 @@ export const updateReview = async (
     const existingReview = await reviewService.getReviewById(id);
 
     if (!existingReview) {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({
+        message: "Review not found",
+      });
       return;
     }
 
@@ -78,7 +94,11 @@ export const updateReview = async (
 
     res.status(200).json(review);
   } catch (error) {
-    res.status(500).json({ message: "Failed to update review" });
+    console.error("Review update error:", error);
+
+    res.status(500).json({
+      message: "Failed to update review",
+    });
   }
 };
 
@@ -91,13 +111,19 @@ export const deleteReview = async (
     const review = await reviewService.getReviewById(id);
 
     if (!review) {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({
+        message: "Review not found",
+      });
       return;
     }
 
     await reviewService.deleteReview(id);
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete review" });
+    console.error("Review deletion error:", error);
+
+    res.status(500).json({
+      message: "Failed to delete review",
+    });
   }
 };

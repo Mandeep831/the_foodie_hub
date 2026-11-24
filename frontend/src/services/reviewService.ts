@@ -1,69 +1,75 @@
-import { reviewRepository } from "../repositories/reviewRepository";
+import {
+  reviewRepository,
+  type ReviewInput,
+} from "../repositories/reviewRepository";
+
 import type { Review } from "../data/reviews";
 
+function validateReview(review: ReviewInput): ReviewInput {
+  const reviewer = review.reviewer.trim();
+  const comment = review.comment.trim();
+
+  if (!Number.isInteger(review.recipeId) || review.recipeId <= 0) {
+    throw new Error("Please select a valid recipe.");
+  }
+
+  if (!reviewer) {
+    throw new Error("Reviewer name is required.");
+  }
+
+  if (!comment) {
+    throw new Error("Review comment is required.");
+  }
+
+  if (
+    !Number.isInteger(review.rating) ||
+    review.rating < 1 ||
+    review.rating > 5
+  ) {
+    throw new Error("Rating must be between 1 and 5.");
+  }
+
+  return {
+    ...review,
+    reviewer,
+    comment,
+  };
+}
+
 export const reviewService = {
-  getAllReviews(): Review[] {
+  async getAllReviews(): Promise<Review[]> {
     return reviewRepository.getAll();
   },
 
-  getReviewById(id: number): Review | undefined {
+  async getReviewById(
+    id: number
+  ): Promise<Review | undefined> {
     return reviewRepository.getById(id);
   },
 
-  addReview(review: Review): Review {
-    const trimmedReviewer = review.reviewer.trim();
-    const trimmedComment = review.comment.trim();
-
-    if (!trimmedReviewer) {
-      throw new Error("Reviewer name is required.");
-    }
-
-    if (!trimmedComment) {
-      throw new Error("Review comment is required.");
-    }
-
-    if (review.rating < 1 || review.rating > 5) {
-      throw new Error("Rating must be between 1 and 5.");
-    }
-
-    const newReview: Review = {
-      ...review,
-      reviewer: trimmedReviewer,
-      comment: trimmedComment,
-    };
-
-    return reviewRepository.create(newReview);
+  async addReview(
+    review: ReviewInput,
+    recipeName: string
+  ): Promise<Review> {
+    return reviewRepository.create(
+      validateReview(review),
+      recipeName
+    );
   },
 
-  updateReview(
+  async updateReview(
     id: number,
-    review: Review
-  ): Review | undefined {
-    const trimmedReviewer = review.reviewer.trim();
-    const trimmedComment = review.comment.trim();
-
-    if (!trimmedReviewer) {
-      throw new Error("Reviewer name is required.");
-    }
-
-    if (!trimmedComment) {
-      throw new Error("Review comment is required.");
-    }
-
-    if (review.rating < 1 || review.rating > 5) {
-      throw new Error("Rating must be between 1 and 5.");
-    }
-
-    const updatedReview: Review = {
-      ...review,
-      reviewer: trimmedReviewer,
-      comment: trimmedComment,
-    };
-
-    return reviewRepository.update(id, updatedReview);
+    review: ReviewInput,
+    recipeName: string
+  ): Promise<Review | undefined> {
+    return reviewRepository.update(
+      id,
+      validateReview(review),
+      recipeName
+    );
   },
 
-  deleteReview(id: number): boolean {
+  async deleteReview(id: number): Promise<boolean> {
     return reviewRepository.delete(id);
   },
 };

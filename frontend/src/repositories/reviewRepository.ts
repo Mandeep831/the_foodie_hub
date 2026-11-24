@@ -1,52 +1,124 @@
-import { recipeReviews, type Review } from "../data/reviews";
 
-let reviews: Review[] = [...recipeReviews];
+import type { Review } from "../data/reviews";
+
+const RECIPE_API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api/recipes";
+
+const API_URL = RECIPE_API_URL.replace(
+  /\/recipes\/?$/,
+  "/reviews"
+);
+
+interface ApiReview {
+  id: number;
+  recipeId: number;
+  reviewer: string;
+  rating: number;
+  comment: string;
+  recipe?: {
+    id: number;
+    name: string;
+  };
+}
+
+export type ReviewInput = {
+  recipeId: number;
+  reviewer: string;
+  rating: number;
+  comment: string;
+};
+
+function mapReview(
+  review: ApiReview,
+  recipeName = ""
+): Review {
+  return {
+    id: review.id,
+    recipeName: review.recipe?.name ?? recipeName,
+    reviewer: review.reviewer,
+    rating: review.rating,
+    comment: review.comment,
+  };
+}
 
 export const reviewRepository = {
-  getAll(): Review[] {
-    return [...reviews];
+  async getAll(): Promise<Review[]> {
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch reviews");
+    }
+
+    const reviews: ApiReview[] = await response.json();
+
+    return reviews.map((review) => mapReview(review));
   },
 
-  getById(id: number): Review | undefined {
+  async getById(id: number): Promise<Review | undefined> {
+    const response = await fetch(`${API_URL}/${id}`);
+
+    if (response.status === 404) return undefined;
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch review");
+    }
+
+    const reviews = await this.getAll();
     return reviews.find((review) => review.id === id);
   },
 
-  create(review: Review): Review {
-    reviews = [...reviews, review];
-    return review;
+  async create(
+    review: ReviewInput,
+    recipeName: string
+  ): Promise<Review> {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(review),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create review");
+    }
+
+    return mapReview(await response.json(), recipeName);
   },
 
-  update(
+  async update(
     id: number,
-    updatedReview: Review
-  ): Review | undefined {
-    const exists = reviews.some(
-      (review) => review.id === id
-    );
+    review: ReviewInput,
+    recipeName: string
+  ): Promise<Review | undefined> {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(review),
+    });
 
-    if (!exists) {
-      return undefined;
+    if (response.status === 404) return undefined;
+
+    if (!response.ok) {
+      throw new Error("Failed to update review");
     }
 
-    reviews = reviews.map((review) =>
-      review.id === id ? updatedReview : review
-    );
-
-    return updatedReview;
+    return mapReview(await response.json(), recipeName);
   },
 
-  delete(id: number): boolean {
-    const exists = reviews.some(
-      (review) => review.id === id
-    );
+  async delete(id: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
 
-    if (!exists) {
-      return false;
+    if (response.status === 404) return false;
+
+    if (!response.ok) {
+      throw new Error("Failed to delete review");
     }
-
-    reviews = reviews.filter(
-      (review) => review.id !== id
-    );
 
     return true;
   },

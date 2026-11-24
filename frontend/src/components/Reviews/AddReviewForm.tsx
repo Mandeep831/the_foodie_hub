@@ -1,58 +1,74 @@
+
 import { useState } from "react";
-import type { Review } from "../../data/reviews";
+import type { ReviewInput } from "../../repositories/reviewRepository";
 
 interface AddReviewFormProps {
-  addReview: (review: Review) => void;
-  recipeNames: string[];
+  addReview: (
+    review: ReviewInput,
+    recipeName: string
+  ) => Promise<void>;
+
+  recipes: {
+    id: number;
+    name: string;
+  }[];
 }
 
 function AddReviewForm({
   addReview,
-  recipeNames,
+  recipes,
 }: AddReviewFormProps) {
-  const [recipeName, setRecipeName] = useState("");
+  const [recipeId, setRecipeId] = useState("");
   const [reviewer, setReviewer] = useState("");
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
+    const selectedRecipe = recipes.find(
+      (recipe) => recipe.id === Number(recipeId)
+    );
+
     if (
-      recipeName === "" ||
-      reviewer.trim() === "" ||
-      rating === "" ||
-      comment.trim() === ""
+      !selectedRecipe ||
+      !reviewer.trim() ||
+      !rating ||
+      !comment.trim()
     ) {
       setError("Please complete all review fields.");
       return;
     }
 
-    const newReview: Review = {
-      id: Date.now(),
-      recipeName,
+    const newReview: ReviewInput = {
+      recipeId: selectedRecipe.id,
       reviewer,
       rating: Number(rating),
       comment,
     };
 
     try {
-      addReview(newReview);
+      setSubmitting(true);
+      setError("");
 
-      setRecipeName("");
+      await addReview(newReview, selectedRecipe.name);
+
+      setRecipeId("");
       setReviewer("");
       setRating("");
       setComment("");
-      setError("");
     } catch (error) {
       setError(
         error instanceof Error
           ? error.message
           : "Unable to add review."
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -61,17 +77,17 @@ function AddReviewForm({
       <h3>Add a Review</h3>
 
       <select
-        value={recipeName}
+        value={recipeId}
         onChange={(event) =>
-          setRecipeName(event.target.value)
+          setRecipeId(event.target.value)
         }
         required
       >
         <option value="">Select Recipe</option>
 
-        {recipeNames.map((name) => (
-          <option key={name} value={name}>
-            {name}
+        {recipes.map((recipe) => (
+          <option key={recipe.id} value={recipe.id}>
+            {recipe.name}
           </option>
         ))}
       </select>
@@ -113,8 +129,8 @@ function AddReviewForm({
 
       {error && <p role="alert">{error}</p>}
 
-      <button type="submit">
-        Add Review
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Adding Review..." : "Add Review"}
       </button>
     </form>
   );
