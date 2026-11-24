@@ -1,4 +1,6 @@
+
 import recipeRoutes from "./routes/recipeRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js"; // Reviews
 import { prisma } from "./prisma.js";
 import express from "express";
 import cors from "cors";
@@ -14,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/reviews", reviewRoutes); // Reviews
 
 app.get("/", (_req, res) => {
   res.json({ message: "FoodieHub Backend is running!" });
