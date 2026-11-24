@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import type {
   Dispatch,
@@ -29,26 +30,30 @@ function AddIngredientForm({
     useState("");
   const [description, setDescription] =
     useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    setError("");
 
     if (
       !recipeName ||
       !ingredientName.trim() ||
       !description.trim()
     ) {
+      setError("Please complete all fields.");
       return;
     }
 
-    const recipe =
-      ingredientService.getIngredientsByRecipe(
-        recipeName
-      );
+    const recipe = ingredientsData.find(
+      (item) => item.recipeName === recipeName
+    );
 
     if (!recipe) {
+      setError("Recipe not found.");
       return;
     }
 
@@ -63,18 +68,37 @@ function AddIngredientForm({
       ],
     };
 
-    ingredientService.updateIngredients(
-      recipeName,
-      updatedRecipe
-    );
+    try {
+      setLoading(true);
 
-    setIngredientsData(
-      ingredientService.getAllIngredients()
-    );
+      const savedRecipe =
+        await ingredientService.updateIngredients(
+          recipeName,
+          updatedRecipe
+        );
 
-    setIngredientName("");
-    setDescription("");
-    setRecipeName("");
+      setIngredientsData((previousData) =>
+        previousData.map((item) =>
+          item.recipeName === recipeName
+            ? savedRecipe
+            : item
+        )
+      );
+
+      setIngredientName("");
+      setDescription("");
+      setRecipeName("");
+    } catch (error) {
+      console.error("Failed to add ingredient:", error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to add ingredient."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -120,8 +144,10 @@ function AddIngredientForm({
         }
       />
 
-      <button type="submit">
-        Add Ingredient
+      {error && <p className="error-message">{error}</p>}
+
+      <button type="submit" disabled={loading}>
+        {loading ? "Saving..." : "Add Ingredient"}
       </button>
     </form>
   );

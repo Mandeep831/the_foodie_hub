@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import IngredientSearchForm from "./IngredientSearchForm";
 import AddIngredientForm from "./AddIngredientForm";
@@ -38,54 +39,69 @@ function IngredientsList({
   ingredientsData,
   setIngredientsData,
 }: IngredientsListProps) {
-  const [searchTerm, setSearchTerm] =
-    useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const filteredRecipes = searchTerm.trim()
     ? ingredientsData.filter((recipe) =>
         recipe.ingredients.some((ingredient) =>
           ingredient.name
             .toLowerCase()
-            .includes(
-              searchTerm
-                .trim()
-                .toLowerCase()
-            )
+            .includes(searchTerm.trim().toLowerCase())
         )
       )
     : ingredientsData;
 
-  const handleRemoveIngredient = (
+  const handleRemoveIngredient = async (
     recipeName: string,
     ingredientName: string
   ) => {
-    const recipe =
-      ingredientService.getIngredientsByRecipe(
-        recipeName
-      );
+    setError("");
+
+    const recipe = ingredientsData.find(
+      (item) => item.recipeName === recipeName
+    );
 
     if (!recipe) {
+      setError("Recipe not found.");
       return;
     }
 
     const updatedRecipe: RecipeIngredients = {
       ...recipe,
-      ingredients:
-        recipe.ingredients.filter(
-          (ingredient) =>
-            ingredient.name !==
-            ingredientName
-        ),
+      ingredients: recipe.ingredients.filter(
+        (ingredient) => ingredient.name !== ingredientName
+      ),
     };
 
-    ingredientService.updateIngredients(
-      recipeName,
-      updatedRecipe
-    );
+    try {
+      setLoading(true);
 
-    setIngredientsData(
-      ingredientService.getAllIngredients()
-    );
+      const savedRecipe =
+        await ingredientService.updateIngredients(
+          recipeName,
+          updatedRecipe
+        );
+
+      setIngredientsData((previousData) =>
+        previousData.map((item) =>
+          item.recipeName === recipeName
+            ? savedRecipe
+            : item
+        )
+      );
+    } catch (error) {
+      console.error("Failed to remove ingredient:", error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to remove ingredient."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -99,9 +115,7 @@ function IngredientsList({
       <button
         type="button"
         onClick={() =>
-          setActivityCount(
-            (count) => count + 1
-          )
+          setActivityCount((count) => count + 1)
         }
       >
         Increase Activity
@@ -114,10 +128,12 @@ function IngredientsList({
 
       <AddIngredientForm
         ingredientsData={ingredientsData}
-        setIngredientsData={
-          setIngredientsData
-        }
+        setIngredientsData={setIngredientsData}
       />
+
+      {error && (
+        <p className="error-message">{error}</p>
+      )}
 
       <div className="ingredient-cards">
         {filteredRecipes.map((recipe) => (
@@ -129,37 +145,26 @@ function IngredientsList({
               <h3>{recipe.recipeName}</h3>
 
               <ul>
-                {recipe.ingredients.map(
-                  (ingredient) => (
-                    <li
-                      key={
-                        ingredient.name
+                {recipe.ingredients.map((ingredient) => (
+                  <li key={ingredient.name}>
+                    <strong>{ingredient.name}</strong>
+
+                    <p>{ingredient.description}</p>
+
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() =>
+                        handleRemoveIngredient(
+                          recipe.recipeName,
+                          ingredient.name
+                        )
                       }
                     >
-                      <strong>
-                        {ingredient.name}
-                      </strong>
-
-                      <p>
-                        {
-                          ingredient.description
-                        }
-                      </p>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleRemoveIngredient(
-                            recipe.recipeName,
-                            ingredient.name
-                          )
-                        }
-                      >
-                        Remove Ingredient
-                      </button>
-                    </li>
-                  )
-                )}
+                      {loading ? "Saving..." : "Remove Ingredient"}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
           </article>
