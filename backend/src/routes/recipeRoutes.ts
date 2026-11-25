@@ -13,7 +13,7 @@ const router = Router();
 
 router.get("/", getRecipes);
 router.get("/:id", validateRecipeId, getRecipe);
-router.post("/", validateRecipeId, addRecipe);
+router.post("/", validateRecipe, addRecipe);
 router.put("/:id", validateRecipeId, editRecipe);
 router.delete("/:id",validateRecipeId, removeRecipe);
 
